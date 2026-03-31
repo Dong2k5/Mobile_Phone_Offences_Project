@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scatter Plot - Population vs Offences</title>
+</head>
+
+<body>
+    <h2>Population vs Offences</h2>
+
+    <label>Scatter Filter:</label>
+    <select id="scatterFilter">
+        <option value="All">All</option>
+    </select>
+
+    <div id="scatter-container"></div>
+
+    <hr>
+
+    <h2>Enforcement Strategy</h2>
+
+    <label>Stacked Bar Filter:</label>
+    <h3>Filter Enforcement Type</h3>
+
+    <label><input type="checkbox" value="fines" checked> Fines</label>
+    <label><input type="checkbox" value="arrests" checked> Arrests</label>
+    <label><input type="checkbox" value="charges" checked> Charges</label>
+
+    <div id="stacked-container"></div>
+
+    <div id="stacked-container"></div>
+
+    <script type="module" src="./js/loadData.js"></script>
+    <script type="module" src="./js/sharedConstants.js"></script>
+    <script type="module" src="./js/scatterPlot.js"></script>
+    <script type="module" src="./js/stackedBar.js"></script>
+
+</body>
+
+</html>
