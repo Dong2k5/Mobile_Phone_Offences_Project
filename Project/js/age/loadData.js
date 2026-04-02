@@ -2,6 +2,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import { drawAgeStackedBar } from "./ageStackedBar.js";
 import { drawAgePie } from "./agePieChart.js";
 import { drawAgeGroupedBar } from "./ageGroupedBar.js";
+import { drawAgeRatioBar } from "./ageRatioBar.js";
 
 d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
     YEAR: +d.YEAR,
@@ -86,6 +87,7 @@ d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
             drawAgeStackedBar(filtered, selectedTypes);
             drawAgePie(filtered, selectedAge, selectedTypes);
             drawAgeGroupedBar(filtered);
+            drawAgeRatioBar(filtered);
         }
 
         // =========================
