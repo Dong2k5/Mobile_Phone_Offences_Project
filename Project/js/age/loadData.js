@@ -1,13 +1,18 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import { drawAgeStackedBar } from "./ageStackedBar.js";
 import { drawAgePie } from "./agePieChart.js";
+import { drawAgeGroupedBar } from "./ageGroupedBar.js";
 
 d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
     YEAR: +d.YEAR,
     AGE_GROUP: d.AGE_GROUP,
     FINES: +d.FINES,
     ARRESTS: +d.ARRESTS,
-    CHARGES: +d.CHARGES
+    CHARGES: +d.CHARGES,
+    POPULATION: +d.POPULATION,
+    FINES_PER_100K: +d.FINES_PER_100K,
+    ARRESTS_PER_100K: +d.ARRESTS_PER_100K,
+    CHARGES_PER_100K: +d.CHARGES_PER_100K
 }))
     .then(data => {
 
@@ -20,7 +25,6 @@ d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
 
         const years = [...new Set(data.map(d => d.YEAR))];
         const ageGroups = [...new Set(data.map(d => d.AGE_GROUP))];
-
         const yearSelect = d3.select("#ageYearFilter");
         const pieSelect = d3.select("#agePieFilter");
 
@@ -65,11 +69,13 @@ d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
                         selectedTypes.push(this.value);
                     });
 
+                if (selectedTypes.length === 0) return;
+
                 updateCharts();
             });
 
         // =========================
-        // UPDATE FUNCTION (KEY IDEA 🔥)
+        // UPDATE FUNCTION
         // =========================
         function updateCharts() {
             const selectedYear = +yearSelect.property("value");
@@ -79,6 +85,7 @@ d3.csv("data/mobile_phone_enforcement_age_all_states.csv", d => ({
 
             drawAgeStackedBar(filtered, selectedTypes);
             drawAgePie(filtered, selectedAge, selectedTypes);
+            drawAgeGroupedBar(filtered);
         }
 
         // =========================
