@@ -1,5 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { width, height, margin, innerWidth, innerHeight } from "./sharedConstants.js";
+import { width, height, margin, innerWidth, innerHeight } from "../sharedConstants.js";
 
 export function drawScatterPlot(data) {
 

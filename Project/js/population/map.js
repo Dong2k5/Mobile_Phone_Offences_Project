@@ -1,5 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { width, height } from "./sharedConstants.js";
+import { width, height } from "../sharedConstants.js";
 
 // ✅ THIS is what loadData.js imports
 export function drawMap(data, geoData) {

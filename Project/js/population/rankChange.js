@@ -1,5 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { width, height, margin, innerWidth, innerHeight } from "./sharedConstants.js";
+import { width, height, margin, innerWidth, innerHeight } from "../sharedConstants.js";
 
 export function drawRankChange(data) {
 
@@ -101,10 +101,16 @@ export function drawRankChange(data) {
         .attr("width", x1.bandwidth())
         .attr("height", d => yScale(d.value))
         .attr("fill", d => color(d.key))
-        .data(d => [
-            { key: "Total", value: d.rankTotal, full: d },
-            { key: "Per100k", value: d.rankRate, full: d }
-        ])
+        .on("mouseover", function (event, d) {
+            tooltip
+                .style("opacity", 1)
+                .html(`
+            <strong>${d.full.state}</strong><br>
+            Type: ${d.key}<br>
+            Rank: ${d.value}<br>
+            Rank Change: ${d.full.rankDiff > 0 ? "+" : ""}${d.full.rankDiff}
+        `);
+        })
         .on("mousemove", function (event) {
             tooltip
                 .style("left", (event.pageX + 10) + "px")
@@ -172,7 +178,7 @@ export function drawRankChange(data) {
     // =========================
     d3.selectAll(".tooltip").remove();
 
-    const tooltip = d3.select("#rank-container")
+    const tooltip = d3.select("body")
         .append("div")
         .style("position", "absolute")
         .style("background", "#fff")
