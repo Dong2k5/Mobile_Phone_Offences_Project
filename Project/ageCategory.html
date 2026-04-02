@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Age Category</title>
+</head>
+
+<body>
+    <h2>Age Groups vs Offences</h2>
+
+    <h2>Enforcement by Age Group</h2>
+
+    <label>Select Year:</label>
+    <select id="ageYearFilter"></select>
+
+    <h3>Filter Enforcement Type</h3>
+    <div id="age-checkboxes">
+        <label><input type="checkbox" value="fines" checked> Fines</label>
+        <label><input type="checkbox" value="arrests" checked> Arrests</label>
+        <label><input type="checkbox" value="charges" checked> Charges</label>
+    </div>
+
+    <div id="age-stacked-container"></div>
+
+    <div id="age-group-filter">
+        <label for="agePieFilter">Select Age Group:</label>
+        <select id="agePieFilter"></select>
+    </div>
+    <div id="age-pie-container"></div>
+
+    <script type="module" src="./js/age/loadData.js"></script>
+    <script type="module" src="./js/sharedConstants.js"></script>
+    <script type="module" src="./js/age/ageStackedBar.js"></script>
+
+</body>
+
+</html>
