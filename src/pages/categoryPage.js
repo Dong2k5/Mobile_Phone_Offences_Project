@@ -13,23 +13,50 @@ import { renderHeatmap } from "../visualizations/heatmap.js";
 // POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
 
-export async function renderCategoryPage(category) {
+export async function renderCategoryPage(initialCategory = "population") {
 
   const container = document.getElementById("content");
 
-  // =====================
-  // LOAD DATA
-  // =====================
   const { ageData, mergedData, geoData } = await loadAllData();
 
-  // =====================
-  // SWITCH CATEGORY
-  // =====================
-  if (category === "age") {
-    renderAgeSection(container, ageData);
-  } else {
-    renderPopulationSection(container, mergedData, geoData);
+  let currentCategory = initialCategory;
+
+  function render() {
+
+    container.innerHTML = `
+      <div class="category-tabs">
+        <button id="btnPopulation" class="${currentCategory === "population" ? "active" : ""}">
+          🗺 Population
+        </button>
+        <button id="btnAge" class="${currentCategory === "age" ? "active" : ""}">
+          📊 Age Groups
+        </button>
+      </div>
+
+      <div id="categoryContent"></div>
+    `;
+
+    const content = container.querySelector("#categoryContent");
+
+    if (currentCategory === "age") {
+      renderAgeSection(content, ageData);
+    } else {
+      renderPopulationSection(content, mergedData, geoData);
+    }
+
+    // Toggle events
+    container.querySelector("#btnPopulation").onclick = () => {
+      currentCategory = "population";
+      render();
+    };
+
+    container.querySelector("#btnAge").onclick = () => {
+      currentCategory = "age";
+      render();
+    };
   }
+
+  render();
 }
 
 // =====================
