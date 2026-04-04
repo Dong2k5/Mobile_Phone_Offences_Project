@@ -6,13 +6,17 @@ export function renderMap(container, data, geoData, options = {}) {
 
   d3.select(container).selectAll("*").remove();
 
-  const width = 700;
-  const height = 500;
+  const margin = { top: 40, right: 20, bottom: 80, left: 20 };
+
+  const width = 700 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
   const svg = d3.select(container)
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
   const filtered = data.filter(d => d.YEAR === year);
 
@@ -33,8 +37,9 @@ export function renderMap(container, data, geoData, options = {}) {
 
   const path = d3.geoPath().projection(projection);
 
-  const color = d3.scaleSequential(d3.interpolateBlues)
-    .domain([0, d3.max(stateData, d => d[1])]);
+  const color = d3.scaleQuantize()
+    .domain([0, d3.max(stateData, d => d[1])])
+    .range(d3.schemeReds[5]);
 
   const nameMap = {
     "NSW": "New South Wales",
@@ -77,7 +82,7 @@ export function renderMap(container, data, geoData, options = {}) {
       const code = entry[0];
       const rate = rateMap.get(code);
 
-      return rate ? color(rate) : "#ccc";
+      return rate ? color(rate) : "#cccccc";
     })
     .attr("stroke", "#333")
     .on("mouseover", function (event, d) {
@@ -110,8 +115,57 @@ export function renderMap(container, data, geoData, options = {}) {
 
   svg.append("text")
     .attr("x", width / 2)
-    .attr("y", 25)
+    .attr("y", -5)
     .attr("text-anchor", "middle")
     .style("font-weight", "bold")
     .text(`Offence Rate per 100k (${year})`);
+
+  // =========================
+  // LEGEND
+  // =========================
+  const legendWidth = 300;
+  const legendHeight = 10;
+
+  const legend = svg.append("g")
+    .attr("transform", `translate(${(width - legendWidth) / 2}, ${height + 30})`)
+
+  // Get thresholds from scale
+  const thresholds = color.thresholds();
+  const colors = color.range();
+
+  // Build legend data
+  const legendData = [
+    color.domain()[0],
+    ...thresholds
+  ];
+
+  // Draw rectangles
+  legend.selectAll("rect")
+    .data(colors)
+    .enter()
+    .append("rect")
+    .attr("x", (d, i) => i * (legendWidth / colors.length))
+    .attr("y", 0)
+    .attr("width", legendWidth / colors.length)
+    .attr("height", legendHeight)
+    .attr("fill", d => d);
+
+  // Add labels
+  legend.selectAll("text")
+    .data(legendData)
+    .enter()
+    .append("text")
+    .attr("x", (d, i) => i * (legendWidth / colors.length))
+    .attr("y", legendHeight + 12)
+    .style("font-size", "10px")
+    .text(d => Math.round(d));
+
+  // Legend title
+  legend.append("text")
+    .attr("x", legendWidth / 2)
+    .attr("y", -5)
+    .attr("text-anchor", "middle")
+    .style("font-size", "11px")
+    .style("font-weight", "bold")
+    .text("Offences per 100k residents");
 }

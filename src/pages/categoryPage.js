@@ -12,6 +12,7 @@ import { renderHeatmap } from "../visualizations/heatmap.js";
 
 // POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
+import { renderDualAxisBar } from "../visualizations/dualAxisBar.js";
 
 export async function renderCategoryPage(initialCategory = "population") {
 
@@ -150,16 +151,28 @@ function renderPopulationSection(container, data, geoData) {
   container.innerHTML = `
     <h2>Population Analysis</h2>
 
-    <div id="scatter"></div>
-    <div id="stacked"></div>
-    <div id="rank"></div>
-    <div id="map"></div>
+    <select id="yearFilter"></select>
+
+    <div class="charts">
+      <p>Total Fines vs. Fines per 100k Residents by Jurisdiction</p>
+      <div id="dualAxis"></div>
+
+      <p>The Spatial Heat of Distraction</p>
+      <div id="map"></div>
+    </div>
   `;
 
-  // =====================
-  // INITIAL RENDER
-  // =====================
-  renderMap("#map", data, geoData, { year: selectedYear });
+  function updateCharts() {
+    clearCharts(container);
+
+    // =====================
+    // INITIAL RENDER
+    // =====================
+    renderMap("#map", data, geoData, { year: selectedYear });
+    renderDualAxisBar("#dualAxis", data, { year: selectedYear });
+  }
+
+  updateCharts();
 }
 
 // =====================
