@@ -20,13 +20,19 @@ export function renderPieChart(container, data, options = {}) {
     const height = 400;
     const radius = Math.min(width, height) / 2 - 50;
 
-    const svg = d3.select(container)
+    const wrapper = d3.select(container)
+        .append("div")
+        .style("display", "flex")
+        .style("align-items", "center")
+        .style("justify-content", "center")
+        .style("gap", "30px");
+
+    const svg = wrapper
         .append("svg")
         .attr("width", width)
         .attr("height", height)
         .append("g")
         .attr("transform", `translate(${width / 2}, ${height / 2})`);
-
     // =========================
     // FILTER DATA
     // =========================
@@ -130,7 +136,6 @@ export function renderPieChart(container, data, options = {}) {
         .text(d => {
             const total = d3.sum(pieData, d => d.value);
             const percent = (d.data.value / total) * 100;
-            return percent > 5 ? `${percent.toFixed(0)}%` : "";
         });
 
     // =========================
@@ -145,26 +150,27 @@ export function renderPieChart(container, data, options = {}) {
     // =========================
     // LEGEND
     // =========================
-    const legend = d3.select(container)
+    const legend = wrapper
         .append("div")
         .style("display", "flex")
-        .style("justify-content", "center")
-        .style("gap", "15px")
-        .style("margin-top", "10px");
+        .style("flex-direction", "column")
+        .style("gap", "10px");
 
     pieData.forEach(d => {
         const item = legend.append("div")
             .style("display", "flex")
             .style("align-items", "center")
-            .style("gap", "5px");
+            .style("gap", "8px");
 
         item.append("div")
-            .style("width", "12px")
-            .style("height", "12px")
+            .style("width", "14px")
+            .style("height", "14px")
+            .style("border-radius", "3px")
             .style("background", color(d.label));
 
         item.append("span")
-            .style("font-size", "12px")
+            .style("font-size", "13px")
+            .style("color", "#333")
             .text(d.label);
     });
 }
