@@ -136,6 +136,7 @@ export function renderPieChart(container, data, options = {}) {
         .text(d => {
             const total = d3.sum(pieData, d => d.value);
             const percent = (d.data.value / total) * 100;
+            return percent > 5 ? `${percent.toFixed(1)}%` : "";
         });
 
     // =========================
@@ -145,7 +146,7 @@ export function renderPieChart(container, data, options = {}) {
         .attr("y", -height / 2 + 30)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
-        .text(`Detection Methods (${year})`);
+        .text(`Detection Methods(${year})`);
 
     // =========================
     // LEGEND
