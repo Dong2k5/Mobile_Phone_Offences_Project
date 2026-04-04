@@ -13,6 +13,7 @@ import { renderHeatmap } from "../visualizations/heatmap.js";
 // POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
 import { renderDualAxisBar } from "../visualizations/dualAxisBar.js";
+import { renderPieChart } from "../visualizations/pieChart.js";
 
 export async function renderCategoryPage(initialCategory = "population") {
 
@@ -88,6 +89,7 @@ function renderAgeSection(container, ageData) {
     </div>
 
     <div class="charts">
+      <p>The Urban-Regional Demographic Intersection</p>
       <div id="heatmap"></div>
     </div>
   `;
@@ -159,6 +161,9 @@ function renderPopulationSection(container, data, geoData) {
 
       <p>The Spatial Heat of Distraction</p>
       <div id="map"></div>
+
+      <p>Detection Methods: Automated Cameras vs. Police Patrols</p>
+      <div id="pie"></div>
     </div>
   `;
 
@@ -170,6 +175,7 @@ function renderPopulationSection(container, data, geoData) {
     // =====================
     renderMap("#map", data, geoData, { year: selectedYear });
     renderDualAxisBar("#dualAxis", data, { year: selectedYear });
+    renderPieChart("#pie", data, { year: selectedYear });
   }
 
   updateCharts();

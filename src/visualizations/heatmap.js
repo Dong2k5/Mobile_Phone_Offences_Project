@@ -39,6 +39,8 @@ export function renderHeatmap(container, data, options = {}) {
         d => d.JURISDICTION
     );
 
+    // Later change with this: d.LOCATION
+
     // Flatten structure
     const flatData = [];
 
