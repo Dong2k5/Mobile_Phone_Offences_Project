@@ -9,6 +9,7 @@ import {
 
 // AGE charts
 import { renderHeatmap } from "../visualizations/heatmap.js";
+import { renderLineChart } from "../visualizations/lineChart.js";
 
 // POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
@@ -91,6 +92,9 @@ function renderAgeSection(container, ageData) {
     <div class="charts">
       <p>The Urban-Regional Demographic Intersection</p>
       <div id="heatmap"></div>
+
+      <p>Trend of Mobile Phone Offences over time</p>
+      <div id="lineChart"></div>
     </div>
   `;
 
@@ -137,6 +141,7 @@ function renderAgeSection(container, ageData) {
     clearCharts(container);
 
     renderHeatmap("#heatmap", filtered, { year: selectedYear });
+    renderLineChart("#lineChart", ageData, { age: selectedAge });
   }
 
   updateCharts();
