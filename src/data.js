@@ -11,28 +11,22 @@ let cachedData = null;
 // LOAD ALL DATA
 // =====================
 export async function loadAllData() {
-  if (cachedData) return cachedData;
 
-  const [ageData, mergedData, geoData] = await Promise.all([
-    d3.csv("Mobile_Phone_Offences_Project/data/mobile_phone_enforcement_age_all_states.csv", d => ({
+  const [data, geoData] = await Promise.all([
+    d3.csv("src/data/mobile_phone_enforcement_age_all_states.csv", d => ({
       YEAR: +d.YEAR,
       AGE_GROUP: d.AGE_GROUP,
       FINES: +d.FINES,
       ARRESTS: +d.ARRESTS,
       CHARGES: +d.CHARGES,
       POPULATION: +d.POPULATION,
-      FINES_PER_100K: +d.FINES_PER_100K,
-      ARRESTS_PER_100K: +d.ARRESTS_PER_100K,
-      CHARGES_PER_100K: +d.CHARGES_PER_100K
+      JURISDICTION: d.JURISDICTION
     })),
 
-    d3.csv("Mobile_Phone_Offences_Project/data/mobile_phone_enforcement_merged.csv"),
-
-    d3.json("Mobile_Phone_Offences_Project/data/australia-states.geojson")
+    d3.json("src/data/australia-states.geojson")
   ]);
 
-  cachedData = { ageData, mergedData, geoData };
-  return cachedData;
+  return { ageData: data, mergedData: data, geoData };
 }
 
 // =====================

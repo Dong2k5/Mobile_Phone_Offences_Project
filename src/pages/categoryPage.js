@@ -8,16 +8,10 @@ import {
 } from "../data.js";
 
 // AGE charts
-import { renderAgeStackedBar } from "../visualizations/ageStackedBar.js";
-import { renderAgePie } from "../visualizations/agePieChart.js";
-import { renderAgeGroupedBar } from "../visualizations/ageGroupedBar.js";
-import { renderAgeRatioBar } from "../visualizations/ageRatioBar.js";
+import { renderHeatmap } from "../visualizations/heatmap.js";
 
-// POPULATION charts (you will adapt these)
+// POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
-import { renderScatterPlot } from "../visualizations/scatterPlot.js";
-import { renderStackedBar } from "../visualizations/stackedBar.js";
-import { renderRankChange } from "../visualizations/rankChange.js";
 
 export async function renderCategoryPage(category) {
 
@@ -66,10 +60,7 @@ function renderAgeSection(container, ageData) {
     </div>
 
     <div class="charts">
-      <div id="stackedBar"></div>
-      <div id="pieChart"></div>
-      <div id="groupedBar"></div>
-      <div id="ratioBar"></div>
+      <div id="heatmap"></div>
     </div>
   `;
 
@@ -115,10 +106,7 @@ function renderAgeSection(container, ageData) {
 
     clearCharts(container);
 
-    renderAgeStackedBar("#stackedBar", filtered, selectedTypes);
-    renderAgePie("#pieChart", filtered, selectedAge, selectedTypes);
-    renderAgeGroupedBar("#groupedBar", filtered);
-    renderAgeRatioBar("#ratioBar", filtered);
+    renderHeatmap("#heatmap", filtered, { year: selectedYear });
   }
 
   updateCharts();
@@ -130,44 +118,21 @@ function renderAgeSection(container, ageData) {
 
 function renderPopulationSection(container, data, geoData) {
 
+  let selectedYear = Math.max(...data.map(d => d.YEAR));
+
   container.innerHTML = `
     <h2>Population Analysis</h2>
 
-    <label>Scatter Filter:</label>
-    <select id="scatterFilter">
-        <option value="All">All</option>
-    </select>
-
     <div id="scatter"></div>
-
-    <hr>
-
-    <h3>Filter Enforcement Type</h3>
-    <label><input type="checkbox" value="FINES" checked> Fines</label>
-    <label><input type="checkbox" value="ARRESTS" checked> Arrests</label>
-    <label><input type="checkbox" value="CHARGES" checked> Charges</label>
-
     <div id="stacked"></div>
-
-    <hr>
-
-    <h2>Rank Change</h2>
     <div id="rank"></div>
-
-    <hr>
-
-    <h2>Choropleth Map</h2>
     <div id="map"></div>
   `;
 
   // =====================
   // INITIAL RENDER
   // =====================
-
-  renderScatterPlot("#scatter", data);
-  renderStackedBar("#stacked", data);
-  renderRankChange("#rank", data);
-  renderMap("#map", data, geoData);
+  renderMap("#map", data, geoData, { year: selectedYear });
 }
 
 // =====================
