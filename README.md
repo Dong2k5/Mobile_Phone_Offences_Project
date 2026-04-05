@@ -31,11 +31,20 @@ from 2008 to 2024, including state-by-state comparison and age group breakdown.
 ```
 phonesafe-au/
 ├── index.html                  ← Main entry point
+├── README.md                   ← Project documentation
+├── MIGRATION.md                ← React-to-Vanilla migration notes
+├── extract_data.py             ← Data extraction script
+├── Project_HCMC_Group3.knwf    ← KNIME workflow asset
+├── cos30045.ipynb              ← Notebook research / analysis
+├── raw_data/                   ← Source spreadsheets and raw datasets
 ├── styles/
 │   └── main.css               ← Vanilla CSS with design tokens & animations
 └── src/
     ├── main.js                ← Application bootstrap & routing
-    ├── data.js                ← All datasets + utility functions
+    ├── data.js                ← Datasets, utility functions, and helpers
+    ├── data/                   ← Static data assets used by charts
+    │   ├── australia-states.geojson
+    │   └── mobile_phone_enforcement_age_all_states.csv
     ├── pages/                 ← Page rendering modules
     │   ├── navbar.js          ← Navigation bar
     │   ├── homePage.js        ← Landing page & overview
@@ -44,9 +53,13 @@ phonesafe-au/
     │   └── footer.js          ← Footer section
     └── visualizations/        ← D3.js chart modules
         ├── mapChart.js        ← Interactive Australia map
-        ├── barChart.js        ← State comparison bars
-        ├── pieChart.js        ← Age group distribution
-        └── lineChart.js       ← 16-year enforcement trends
+        ├── dualAxisBar.js     ← State comparison and per-capita comparison chart
+        ├── heatmap.js         ← Age × location intensity heatmap
+        ├── lineChart.js       ← Trend line chart by age group
+        ├── pieChart.js        ← Detection method distribution
+        ├── renderAgeFinesBar.js ← Per-100k age fines bar chart
+        ├── renderEnforcementBiasBar.js ← Camera vs police detection bias bars
+        └── stackedBarChart.js ← Urban / regional / remote breakdown
 ```
 
 ---
