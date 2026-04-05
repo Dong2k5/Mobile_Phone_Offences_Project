@@ -1,12 +1,18 @@
+// src/visualizations/lineChart.js
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 /**
  * Multi-line Chart:
  * Trend by AGE GROUP over time
+ * @param {string} container - DOM selector
+ * @param {Array} data - dataset
+ * @param {Object} [config] - optional config { age: "17-25" }
  */
-export function renderLineChart(container, data) {
+export function renderLineChart(container, data, config = {}) {
 
     d3.select(container).selectAll("*").remove();
+
+    const selectedAge = config.age; // optional
 
     const margin = { top: 50, right: 100, bottom: 50, left: 70 };
     const width = 700 - margin.left - margin.right;
@@ -20,9 +26,17 @@ export function renderLineChart(container, data) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // =========================
+    // FILTER DATA
+    // =========================
+    let filteredData = data;
+    if (selectedAge) {
+        filteredData = data.filter(d => d.AGE_GROUP === selectedAge);
+    }
+
+    // =========================
     // AGGREGATE
     // =========================
-    const grouped = d3.groups(data, d => d.AGE_GROUP);
+    const grouped = d3.groups(filteredData, d => d.AGE_GROUP);
 
     const processed = grouped.map(([age, values]) => ({
         age,

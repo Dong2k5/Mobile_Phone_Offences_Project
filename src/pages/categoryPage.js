@@ -141,7 +141,7 @@ function renderAgeSection(container, ageData) {
     clearCharts(container);
 
     renderHeatmap("#heatmap", filtered, { year: selectedYear });
-    renderLineChart("#lineChart", ageData, { age: selectedAge });
+    renderLineChart("#lineChart", ageData);
   }
 
   updateCharts();

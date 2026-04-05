@@ -20,7 +20,12 @@ export async function loadAllData() {
       ARRESTS: +d.ARRESTS,
       CHARGES: +d.CHARGES,
       POPULATION: +d.POPULATION,
-      JURISDICTION: d.JURISDICTION
+      JURISDICTION: d.JURISDICTION,
+      FINES_PER_100K: +d.FINES_PER_100K,
+      ARRESTS_PER_100K: +d.ARRESTS_PER_100K,
+      CHARGES_PER_100K: +d.CHARGES_PER_100K,
+      LOCATION: d.LOCATION,
+      DETECTION_METHOD: d.DETECTION_METHOD
     })),
 
     d3.json("src/data/australia-states.geojson")
