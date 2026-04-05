@@ -1,5 +1,9 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
+/**
+ * Enforcement Bias Chart: Detection Method Distribution by Age Group (100% Stacked)
+ * Shows whether younger age groups are disproportionately caught by police vs cameras
+ */
 export function renderEnforcementBiasBar(container, data, options = {}) {
     const year = options.year || 2024;
 
@@ -8,9 +12,9 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     d3.select(container).selectAll("*").remove();
 
-    const margin = { top: 40, right: 20, bottom: 50, left: 80 };
-    const width = 600 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const margin = { top: 40, right: 80, bottom: 50, left: 60 };
+    const width = 650 - margin.left - margin.right;
+    const height = 450 - margin.top - margin.bottom;
 
     const svg = d3.select(container)
         .append("svg")
@@ -24,58 +28,67 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     const filtered = data.filter(d => d.YEAR === year);
 
-    // Convert "Others" → "Remote"
+    // Normalize detection method names
     filtered.forEach(d => {
-        if (d.LOCATION === "Others") d.LOCATION = "Remote";
+        if (d.DETECTION_METHOD === "Police issued") d.DETECTION_METHOD = "Police Patrols";
     });
 
-    const locations = ["Urban", "Regional", "Remote"];
+    const detectionMethods = ["Camera", "Police Patrols"];
+    const ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
-    // Prepare stacked data by jurisdiction
+    // Prepare data: count offences by age group and detection method
     const stackData = Array.from(
         d3.rollup(
             filtered,
-            v => d3.sum(v, d => d.FINES + d.ARRESTS + d.CHARGES),
-            d => d.JURISDICTION,
-            d => d.LOCATION
+            v => v.length, // count records
+            d => d.AGE_GROUP,
+            d => d.DETECTION_METHOD
         ),
-        ([jurisdiction, locationMap]) => {
-            const obj = { jurisdiction };
-            locations.forEach(loc => {
-                obj[loc] = locationMap.get(loc) || 0; // fill missing with 0
+        ([ageGroup, methodMap]) => {
+            const obj = { ageGroup };
+            detectionMethods.forEach(method => {
+                obj[method] = methodMap.get(method) || 0;
             });
             return obj;
         }
-    );
+    ).sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     // =========================
-    // STACK
+    // STACK (100% normalization)
     // =========================
     const stack = d3.stack()
-        .keys(locations);
+        .keys(detectionMethods);
 
     const series = stack(stackData);
+
+    // Normalize each bar to 100%
+    series.forEach(s => {
+        s.forEach(d => {
+            const total = d.data["Camera"] + d.data["Police Patrols"];
+            d[0] = (d[0] / total) * 100;
+            d[1] = (d[1] / total) * 100;
+        });
+    });
 
     // =========================
     // SCALES
     // =========================
     const x = d3.scaleBand()
-        .domain(stackData.map(d => d.jurisdiction))
+        .domain(stackData.map(d => d.ageGroup))
         .range([0, width])
         .padding(0.3);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(stackData, d => locations.reduce((sum, key) => sum + d[key], 0)) * 1.1])
+        .domain([0, 100])
         .range([height, 0]);
 
     const root = getComputedStyle(document.documentElement);
 
     const color = d3.scaleOrdinal()
-        .domain(locations)
+        .domain(detectionMethods)
         .range([
-            root.getPropertyValue('--accent').trim(),  // Urban
-            root.getPropertyValue('--text').trim(),   // Regional
-            root.getPropertyValue('--sub').trim()      // Remote
+            root.getPropertyValue('--accent').trim(),  // Camera (blue)
+            root.getPropertyValue('--sub').trim()       // Police Patrols (muted)
         ]);
 
     // =========================
@@ -86,7 +99,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .call(d3.axisBottom(x));
 
     svg.append("g")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y).tickFormat(d => d + "%"));
 
     // =========================
     // TOOLTIP
@@ -105,7 +118,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .style("opacity", 0);
 
     // =========================
-    // BARS
+    // BARS (100% STACKED)
     // =========================
     svg.selectAll("g.layer")
         .data(series)
@@ -117,14 +130,15 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .data(d => d)
         .enter()
         .append("rect")
-        .attr("x", d => x(d.data.jurisdiction))
+        .attr("x", d => x(d.data.ageGroup))
         .attr("y", d => y(d[1]))
         .attr("height", d => y(d[0]) - y(d[1]))
         .attr("width", x.bandwidth())
         .on("mouseover", (event, d) => {
             const key = event.currentTarget.parentNode.__data__.key;
+            const percentage = (d[1] - d[0]).toFixed(1);
             tooltip.style("opacity", 1)
-                .html(`<strong>${d.data.jurisdiction}</strong><br>${key}: ${d.data[key]}`);
+                .html(`<strong>${d.data.ageGroup}</strong><br>${key}: ${percentage}%`);
         })
         .on("mousemove", event => {
             tooltip.style("left", (event.pageX + 10) + "px")
@@ -141,7 +155,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "var(--text)")
-        .text(`Enforcement Bias: Urban vs Regional vs Remote (${year})`);
+        .text(`Detection Method Distribution by Age Group (${year})`);
 
     // =========================
     // LABELS
@@ -152,34 +166,34 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .style("fill", "var(--text)")
-        .text("Jurisdiction");
+        .text("Age Group");
 
     svg.append("text")
         .attr("x", -height / 2)
-        .attr("y", -65)
+        .attr("y", -50)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .style("fill", "var(--text)")
-        .text("Total Offences");
+        .text("Proportion (%)");
 
     // =========================
     // LEGEND
     // =========================
     const legend = svg.append("g")
-        .attr("transform", `translate(${width - 100}, 0)`);
-    locations.forEach((loc, i) => {
+        .attr("transform", `translate(${width - 20}, 0)`);
+    detectionMethods.forEach((method, i) => {
         const g = legend.append("g")
             .attr("transform", `translate(0, ${i * 20})`);
         g.append("rect")
             .attr("width", 15)
             .attr("height", 15)
-            .attr("fill", color(loc));
+            .attr("fill", color(method));
         g.append("text")
             .attr("x", 20)
             .attr("y", 12)
             .style("font-size", "12px")
             .style("fill", "var(--text)")
-            .text(loc);
+            .text(method);
     });
 }

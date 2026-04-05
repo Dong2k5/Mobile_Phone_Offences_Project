@@ -348,9 +348,9 @@ export async function renderCategoryPage(initialCategory = "population") {
         insights: "26–39 has the highest per-capita offence rate overall, making it the most targeted or most offending group. 17–25 is consistently second highest, especially strong in SA, TAS, and VIC. 40–64 is moderate but still significant. 65+ and 0–16 remain very low even after normalization, indicating real behavioral or enforcement differences, not just population effects."
       },
       enforcementBiasBar: {
-        context: "Examines enforcement intensity across urban, regional, and remote areas relative to their populations.",
-        values: `Year: ${currentState.year} | Metric: Enforcement rate by location type`,
-        insights: "Urban areas still dominate even after normalization, meaning enforcement is not purely population-driven. Regional areas show comparable or higher per-capita rates in some states, indicating targeted enforcement outside cities. Remote areas show spikes in NT and WA, suggesting reactive, incident-based enforcement in smaller populations. Conclusion: there is mild urban bias, but also targeted regional and remote enforcement in certain states."
+        context: "Shows the proportion of offences detected by Camera vs Police Patrols for each age group.",
+        values: `Year: ${currentState.year} | Detection methods: Camera (automated) vs Police Patrols (manual)`,
+        insights: "If younger age groups (17–25) show a significantly higher proportion of Police Patrol detection, it suggests potential age-profiling or targeted police enforcement. Conversely, if all age groups show similar camera/police ratios, enforcement is mechanically fair. A high camera proportion indicates automated, bias-free detection; high police proportion for young drivers signals potential discriminatory enforcement patterns."
       }
     };
 
@@ -426,7 +426,7 @@ export async function renderCategoryPage(initialCategory = "population") {
         chartDiv = "ageFinesBar";
         renderFn = () => renderAgeFinesBar(`#${chartDiv}`, ageData, { year: currentState.year });
       } else if (chartId === "enforcementBiasBar") {
-        title = "Enforcement Bias: Urban vs Regional vs Remote";
+        title = "Detection Method Distribution by Age Group";
         chartDiv = "enforcementBiasBar";
         renderFn = () => renderEnforcementBiasBar(`#${chartDiv}`, ageData, { year: currentState.year });
       }
@@ -555,7 +555,7 @@ export async function renderCategoryPage(initialCategory = "population") {
         </div>
         <div class="chart-container">
           <div>
-            <h3 class="chart-title">Enforcement Bias: Urban vs Regional vs Remote</h3>
+            <h3 class="chart-title">Detection Method Distribution by Age Group</h3>
             <button class="detail-btn" data-chart="enforcementBiasBar">View Details</button>
           </div>
           <div id="enforcementBiasBar"></div>
