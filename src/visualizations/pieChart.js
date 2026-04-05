@@ -131,7 +131,7 @@ export function renderPieChart(container, data, options = {}) {
         .attr("transform", d => `translate(${labelArc.centroid(d)})`)
         .attr("text-anchor", "middle")
         .style("font-size", "11px")
-        .style("fill", "#111")
+        .style("fill", "var(--text)")
         .text(d => {
             const total = d3.sum(pieData, d => d.value);
             const percent = (d.data.value / total) * 100;
@@ -145,6 +145,7 @@ export function renderPieChart(container, data, options = {}) {
         .attr("y", -height / 2 + 30)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Detection Methods (${year})`);
 
     // =========================
@@ -170,7 +171,7 @@ export function renderPieChart(container, data, options = {}) {
 
         item.append("span")
             .style("font-size", "13px")
-            .style("color", "#333")
+            .style("fill", "var(--text)")
             .text(d.label);
     });
 }

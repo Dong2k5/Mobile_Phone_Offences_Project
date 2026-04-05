@@ -142,7 +142,7 @@ export function renderMap(container, data, geoData, options = {}) {
     .attr("y", -5)
     .attr("text-anchor", "middle")
     .style("font-weight", "bold")
-    .style("fill", textColor)
+    .style("fill", "var(--text)")
     .text(`Offence Rate per 100k (${year})`);
 
   // Legend
@@ -181,6 +181,6 @@ export function renderMap(container, data, geoData, options = {}) {
     .attr("text-anchor", "middle")
     .style("font-size", "11px")
     .style("font-weight", "bold")
-    .style("fill", textColor)
+    .style("fill", "var(--text)")
     .text("Offences per 100k residents");
 }

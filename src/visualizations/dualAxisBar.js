@@ -4,19 +4,16 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
  * Dual Axis Chart:
  * - Bars → Total fines
  * - Line → Fines per 100k residents
+ * 
+ * Theme-responsive: all colors use CSS variables
  */
 export function renderDualAxisBar(container, data, options = {}) {
-
     const year = options.year || 2024;
 
-    // =========================
-    // CLEAR CONTAINER
-    // =========================
+    // Clear previous chart
     d3.select(container).selectAll("*").remove();
 
-    // =========================
-    // SETUP
-    // =========================
+    // Setup dimensions
     const margin = { top: 50, right: 60, bottom: 50, left: 70 };
     const width = 700 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -29,19 +26,15 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // =========================
-    // FILTER DATA
+    // FILTER & AGGREGATE DATA
     // =========================
     const filtered = data.filter(d => d.YEAR === year);
 
-    // =========================
-    // AGGREGATE BY STATE
-    // =========================
     const stateData = d3.rollups(
         filtered,
         v => {
             const totalFines = d3.sum(v, d => d.FINES);
             const totalPop = d3.sum(v, d => d.POPULATION);
-
             return {
                 total: totalFines,
                 rate: (totalFines / totalPop) * 100000
@@ -54,7 +47,6 @@ export function renderDualAxisBar(container, data, options = {}) {
         rate: values.rate
     }));
 
-    // Sort by total fines (optional but cleaner)
     stateData.sort((a, b) => b.total - a.total);
 
     // =========================
@@ -80,63 +72,68 @@ export function renderDualAxisBar(container, data, options = {}) {
     // =========================
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("fill", "var(--sub)");
 
     svg.append("g")
-        .call(d3.axisLeft(yLeft));
+        .call(d3.axisLeft(yLeft))
+        .selectAll("text")
+        .attr("fill", "var(--sub)");
 
     svg.append("g")
         .attr("transform", `translate(${width},0)`)
-        .call(d3.axisRight(yRight));
+        .call(d3.axisRight(yRight))
+        .selectAll("text")
+        .attr("fill", "var(--sub)");
 
     // =========================
     // TOOLTIP
     // =========================
     d3.select("#dual-tooltip").remove();
-
     const tooltip = d3.select("body")
         .append("div")
         .attr("id", "dual-tooltip")
         .style("position", "absolute")
-        .style("background", "#fff")
+        .style("background", "var(--panel)")
         .style("padding", "6px")
-        .style("border", "1px solid #ccc")
+        .style("border", "1px solid var(--border)")
         .style("border-radius", "4px")
         .style("pointer-events", "none")
+        .style("color", "var(--text)")
         .style("opacity", 0);
 
     // =========================
-    // DRAW BARS (TOTAL FINES)
+    // DRAW BARS
     // =========================
     svg.selectAll(".bar")
         .data(stateData)
         .enter()
         .append("rect")
+        .attr("class", "bar")
         .attr("x", d => x(d.state))
         .attr("y", d => yLeft(d.total))
         .attr("width", x.bandwidth())
         .attr("height", d => height - yLeft(d.total))
-        .attr("fill", "#3b82f6")
+        .style("fill", "var(--accent)")
+        .style("stroke", "var(--border)")
+        .style("stroke-width", 0.5)
         .on("mouseover", function (event, d) {
-            tooltip
-                .style("opacity", 1)
+            tooltip.style("opacity", 1)
                 .html(`
-        <strong>${d.state}</strong><br>
-        <span style="color:#3b82f6;">● Total fines:</span> ${d.total.toLocaleString()}<br>
-        <span style="color:#ef4444;">● Rate:</span> ${d.rate.toFixed(1)} per 100k
-        `);
+                    <strong>${d.state}</strong><br>
+                    <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}<br>
+                    <span style="color:var(--highlight,#ef4444);">● Rate:</span> ${d.rate.toFixed(1)} per 100k
+                `);
         })
-        .on("mousemove", function (event) {
-            tooltip
-                .style("left", (event.pageX + 10) + "px")
+        .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 20) + "px");
         })
-        .on("mouseout", function () {
-            tooltip.style("opacity", 0);
-        });
+        .on("mouseout", () => tooltip.style("opacity", 0));
 
     // =========================
-    // DRAW LINE (RATE)
+    // DRAW LINE
     // =========================
     const line = d3.line()
         .x(d => x(d.state) + x.bandwidth() / 2)
@@ -145,36 +142,32 @@ export function renderDualAxisBar(container, data, options = {}) {
     svg.append("path")
         .datum(stateData)
         .attr("fill", "none")
-        .attr("stroke", "#ef4444")
+        .attr("stroke", "var(--highlight,#ef4444)")
         .attr("stroke-width", 2)
         .attr("d", line);
 
-    // Add points
     svg.selectAll(".dot")
         .data(stateData)
         .enter()
         .append("circle")
+        .attr("class", "dot")
         .attr("cx", d => x(d.state) + x.bandwidth() / 2)
         .attr("cy", d => yRight(d.rate))
         .attr("r", 5)
-        .attr("fill", "#ef4444")
+        .style("fill", "var(--highlight,#ef4444)")
         .on("mouseover", function (event, d) {
-            tooltip
-                .style("opacity", 1)
+            tooltip.style("opacity", 1)
                 .html(`
-        <strong>${d.state}</strong><br>
-        <span style="color:#ef4444;">● Rate:</span> ${d.rate.toFixed(1)} per 100k<br>
-        <span style="color:#3b82f6;">● Total fines:</span> ${d.total.toLocaleString()}
-        `);
+                    <strong>${d.state}</strong><br>
+                    <span style="color:var(--highlight,#ef4444);">● Rate:</span> ${d.rate.toFixed(1)} per 100k<br>
+                    <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}
+                `);
         })
-        .on("mousemove", function (event) {
-            tooltip
-                .style("left", (event.pageX + 10) + "px")
+        .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 20) + "px");
         })
-        .on("mouseout", function () {
-            tooltip.style("opacity", 0);
-        });
+        .on("mouseout", () => tooltip.style("opacity", 0));
 
     // =========================
     // TITLE
@@ -184,6 +177,7 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("y", -15)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Total Fines vs Rate per 100k (${year})`);
 
     // =========================
@@ -193,11 +187,13 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("x", -40)
         .attr("y", -10)
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Total Fines");
 
     svg.append("text")
         .attr("x", width - 40)
         .attr("y", -10)
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Rate per 100k");
 }

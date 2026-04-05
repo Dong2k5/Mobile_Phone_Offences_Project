@@ -144,6 +144,7 @@ export function renderStackedBarChart(container, data, options = {}) {
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Urban vs Regional vs Remote Distractions (${year})`);
 
     // =====================
@@ -162,6 +163,7 @@ export function renderStackedBarChart(container, data, options = {}) {
             .attr("x", 20)
             .attr("y", 12)
             .style("font-size", "12px")
+            .style("fill", "var(--text)")
             .text(key);
     });
 }
