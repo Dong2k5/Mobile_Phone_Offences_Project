@@ -68,9 +68,15 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .domain([0, d3.max(stackData, d => locations.reduce((sum, key) => sum + d[key], 0)) * 1.1])
         .range([height, 0]);
 
+    const root = getComputedStyle(document.documentElement);
+
     const color = d3.scaleOrdinal()
         .domain(locations)
-        .range(["#60a5fa", "#fbbf24", "#34d399"]); // Urban, Regional, Remote colors
+        .range([
+            root.getPropertyValue('--accent').trim(),  // Urban
+            root.getPropertyValue('--text').trim(),   // Regional
+            root.getPropertyValue('--sub').trim()      // Remote
+        ]);
 
     // =========================
     // AXES
@@ -133,6 +139,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Enforcement Bias: Urban vs Regional vs Remote (${year})`);
 
     // =========================
@@ -143,13 +150,35 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("y", height + 40)
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Jurisdiction");
 
     svg.append("text")
         .attr("x", -height / 2)
-        .attr("y", -50)
+        .attr("y", -65)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Total Offences");
+
+    // =========================
+    // LEGEND
+    // =========================
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width - 100}, 0)`);
+    locations.forEach((loc, i) => {
+        const g = legend.append("g")
+            .attr("transform", `translate(0, ${i * 20})`);
+        g.append("rect")
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("fill", color(loc));
+        g.append("text")
+            .attr("x", 20)
+            .attr("y", 12)
+            .style("font-size", "12px")
+            .style("fill", "var(--text)")
+            .text(loc);
+    });
 }

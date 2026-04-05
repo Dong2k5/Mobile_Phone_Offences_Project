@@ -1,4 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { HEATMAP_SHADES } from "../data.js";
 
 /**
  * Heatmap: Age Group vs Location (Urban-Regional-Remote)
@@ -65,8 +66,17 @@ export function renderHeatmap(container, data, options = {}) {
         .range([0, height])
         .padding(0.05);
 
-    const color = d3.scaleSequential(d3.interpolateReds)
-        .domain([0, d3.max(flatData, d => d.value)]);
+    const maxValue = d3.max(flatData, d => d.value) || 1;
+
+    const color = d3.scaleQuantize()
+        .domain([0, maxValue])
+        .range(HEATMAP_SHADES);
+
+    const root = getComputedStyle(document.documentElement);
+    const panel = root.getPropertyValue('--panel').trim();
+    const border = root.getPropertyValue('--border').trim();
+    const textColor = root.getPropertyValue('--text').trim();
+
 
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
@@ -80,10 +90,11 @@ export function renderHeatmap(container, data, options = {}) {
         .append("div")
         .attr("id", "heatmap-tooltip")
         .style("position", "absolute")
-        .style("background", "#fff")
+        .style("background", panel)
         .style("padding", "6px")
-        .style("border", "1px solid #ccc")
+        .style("border", `1px solid ${border}`)
         .style("border-radius", "4px")
+        .style("color", textColor)
         .style("pointer-events", "none")
         .style("opacity", 0);
 
@@ -118,5 +129,6 @@ export function renderHeatmap(container, data, options = {}) {
         .attr("y", -20)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Age Group vs Location Offences (${year})`);
 }

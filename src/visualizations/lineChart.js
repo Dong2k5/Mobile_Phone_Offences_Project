@@ -158,6 +158,7 @@ export function renderLineChart(container, data, config = {}) {
             .attr("x", 15)
             .attr("y", 10)
             .style("font-size", "11px")
+            .style("fill", "var(--text)")
             .text(g.age);
     });
 
@@ -169,5 +170,6 @@ export function renderLineChart(container, data, config = {}) {
         .attr("y", -15)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text("Offence Trends by Age Group (2023–2024)");
 }

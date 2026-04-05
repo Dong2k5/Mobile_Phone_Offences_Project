@@ -104,6 +104,7 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
+        .style("fill", "var(--text)")
         .text(`Mobile Phone Fines per 100k Residents by Age Group (${year})`);
 
     // =========================
@@ -114,6 +115,7 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("y", height + 40)
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Age Group");
 
     svg.append("text")
@@ -122,5 +124,6 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
+        .style("fill", "var(--text)")
         .text("Fines per 100k Residents");
 }

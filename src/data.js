@@ -45,6 +45,15 @@ export const MAP_SHADES = [
   "#16253B",
 ];
 
+export const HEATMAP_SHADES = [
+  "#acc7e4",
+  "#7BA5D1",
+  "#5B8BC1",
+  "#385C91",
+  "#253B5A",
+  "#16253B",
+];
+
 // =====================
 // HELPERS (TRANSFORMATIONS)
 // =====================
