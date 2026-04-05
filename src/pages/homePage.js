@@ -64,14 +64,6 @@ export function renderHomePage() {
         <h2 style="text-align: center; margin-bottom: 40px;">Explore the Data</h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto;">
-          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 24px; background: var(--card); text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="window.app.navigate('category', 'population')"
-            onmouseover="this.style.borderColor='var(--accent)'; this.style.background='rgba(59,130,246,0.1)'"
-            onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--card)'">
-            <div style="font-size: 32px; margin-bottom: 12px;">🗺️</div>
-            <h3 style="color: var(--text); margin-bottom: 8px;">Geographic Distribution</h3>
-            <p style="font-size: 12px; color: var(--sub); margin: 0;">Compare enforcement across states and territories</p>
-          </div>
-
           <div style="border: 1px solid var(--border); border-radius: 10px; padding: 24px; background: var(--card); text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="window.app.navigate('category', 'age')"
             onmouseover="this.style.borderColor='var(--accent)'; this.style.background='rgba(59,130,246,0.1)'"
             onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--card)'">
@@ -80,12 +72,12 @@ export function renderHomePage() {
             <p style="font-size: 12px; color: var(--sub); margin: 0;">Analyse offence patterns by age group</p>
           </div>
 
-          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 24px; background: var(--card); text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="window.app.navigate('about')"
+          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 24px; background: var(--card); text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="window.app.navigate('category', 'population')"
             onmouseover="this.style.borderColor='var(--accent)'; this.style.background='rgba(59,130,246,0.1)'"
             onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--card)'">
-            <div style="font-size: 32px; margin-bottom: 12px;">ℹ️</div>
-            <h3 style="color: var(--text); margin-bottom: 8px;">About & Methodology</h3>
-            <p style="font-size: 12px; color: var(--sub); margin: 0;">Learn the data sources, processing, and team</p>
+            <div style="font-size: 32px; margin-bottom: 12px;">🗺️</div>
+            <h3 style="color: var(--text); margin-bottom: 8px;">Geographic Distribution</h3>
+            <p style="font-size: 12px; color: var(--sub); margin: 0;">Compare enforcement across states and territories</p>
           </div>
         </div>
       </div>
