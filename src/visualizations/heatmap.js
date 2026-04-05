@@ -36,13 +36,11 @@ export function renderHeatmap(container, data, options = {}) {
         v => d3.sum(v, d => d.FINES + d.ARRESTS + d.CHARGES),
         d => d.AGE_GROUP,
         d => {
-            // RENAME LOCATIONS: Others → Remote
             if (d.LOCATION === "Others") return "Remote";
-            return d.LOCATION; // Urban or Regional remain
+            return d.LOCATION;
         }
     );
 
-    // Flatten structure
     const flatData = [];
     heatData.forEach(([age, locations]) => {
         locations.forEach(([loc, value]) => {
@@ -54,31 +52,22 @@ export function renderHeatmap(container, data, options = {}) {
         });
     });
 
-    // =========================
-    // DOMAINS
-    // =========================
     const ageGroups = [...new Set(flatData.map(d => d.age))];
     const locations = [...new Set(flatData.map(d => d.location))];
 
-    // =========================
-    // SCALES
-    // =========================
     const x = d3.scaleBand()
-        .domain(locations)
+        .domain(ageGroups)
         .range([0, width])
         .padding(0.05);
 
     const y = d3.scaleBand()
-        .domain(ageGroups)
+        .domain(locations)
         .range([0, height])
         .padding(0.05);
 
     const color = d3.scaleSequential(d3.interpolateReds)
         .domain([0, d3.max(flatData, d => d.value)]);
 
-    // =========================
-    // AXES
-    // =========================
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x));
@@ -86,9 +75,6 @@ export function renderHeatmap(container, data, options = {}) {
     svg.append("g")
         .call(d3.axisLeft(y));
 
-    // =========================
-    // TOOLTIP
-    // =========================
     d3.select("#heatmap-tooltip").remove();
     const tooltip = d3.select("body")
         .append("div")
@@ -101,15 +87,12 @@ export function renderHeatmap(container, data, options = {}) {
         .style("pointer-events", "none")
         .style("opacity", 0);
 
-    // =========================
-    // DRAW CELLS
-    // =========================
     svg.selectAll()
         .data(flatData)
         .enter()
         .append("rect")
-        .attr("x", d => x(d.location))
-        .attr("y", d => y(d.age))
+        .attr("x", d => x(d.age))
+        .attr("y", d => y(d.location))
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .attr("fill", d => color(d.value))
@@ -130,9 +113,6 @@ export function renderHeatmap(container, data, options = {}) {
             tooltip.style("opacity", 0);
         });
 
-    // =========================
-    // TITLE
-    // =========================
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", -20)
