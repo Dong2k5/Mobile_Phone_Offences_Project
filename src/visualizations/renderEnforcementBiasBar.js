@@ -8,7 +8,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     d3.select(container).selectAll("*").remove();
 
-    const margin = { top: 40, right: 20, bottom: 60, left: 60 };
+    const margin = { top: 40, right: 20, bottom: 50, left: 80 };
     const width = 600 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
@@ -24,34 +24,35 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     const filtered = data.filter(d => d.YEAR === year);
 
-    // Map "Others" → "Remote" like in other charts
+    // Convert "Others" → "Remote"
     filtered.forEach(d => {
         if (d.LOCATION === "Others") d.LOCATION = "Remote";
     });
 
-    // Aggregate by JURISDICTION and DETECTION_METHOD
+    const locations = ["Urban", "Regional", "Remote"];
+
+    // Prepare stacked data by jurisdiction
     const stackData = Array.from(
         d3.rollup(
             filtered,
             v => d3.sum(v, d => d.FINES + d.ARRESTS + d.CHARGES),
             d => d.JURISDICTION,
-            d => d.LOCATION // Urban / Regional / Remote
+            d => d.LOCATION
         ),
         ([jurisdiction, locationMap]) => {
             const obj = { jurisdiction };
-            for (let [loc, total] of locationMap) {
-                obj[loc] = total;
-            }
+            locations.forEach(loc => {
+                obj[loc] = locationMap.get(loc) || 0; // fill missing with 0
+            });
             return obj;
         }
     );
 
-    const locations = ["Urban", "Regional", "Remote"];
-
+    // =========================
+    // STACK
+    // =========================
     const stack = d3.stack()
-        .keys(locations)
-        .order(d3.stackOrderNone)
-        .offset(d3.stackOffsetNone);
+        .keys(locations);
 
     const series = stack(stackData);
 
@@ -61,17 +62,15 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     const x = d3.scaleBand()
         .domain(stackData.map(d => d.jurisdiction))
         .range([0, width])
-        .padding(0.2);
+        .padding(0.3);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(stackData, d =>
-            locations.reduce((sum, loc) => sum + (d[loc] || 0), 0)
-        ) * 1.1])
+        .domain([0, d3.max(stackData, d => locations.reduce((sum, key) => sum + d[key], 0)) * 1.1])
         .range([height, 0]);
 
     const color = d3.scaleOrdinal()
         .domain(locations)
-        .range(["#60a5fa", "#facc15", "#34d399"]);
+        .range(["#60a5fa", "#fbbf24", "#34d399"]); // Urban, Regional, Remote colors
 
     // =========================
     // AXES
@@ -86,11 +85,10 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     // TOOLTIP
     // =========================
-    d3.select("#enforcement-tooltip").remove();
-
+    d3.select("#enforcement-bias-tooltip").remove();
     const tooltip = d3.select("body")
         .append("div")
-        .attr("id", "enforcement-tooltip")
+        .attr("id", "enforcement-bias-tooltip")
         .style("position", "absolute")
         .style("background", "#fff")
         .style("padding", "6px")
@@ -117,9 +115,9 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("height", d => y(d[0]) - y(d[1]))
         .attr("width", x.bandwidth())
         .on("mouseover", (event, d) => {
-            const loc = locations.find(loc => d.data[loc] === (d[1] - d[0]));
+            const key = event.currentTarget.parentNode.__data__.key;
             tooltip.style("opacity", 1)
-                .html(`<strong>${d.data.jurisdiction}</strong><br>${loc}: ${(d[1] - d[0]).toLocaleString()} offences`);
+                .html(`<strong>${d.data.jurisdiction}</strong><br>${key}: ${d.data[key]}`);
         })
         .on("mousemove", event => {
             tooltip.style("left", (event.pageX + 10) + "px")
@@ -128,15 +126,18 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .on("mouseout", () => tooltip.style("opacity", 0));
 
     // =========================
-    // TITLE & LABELS
+    // TITLE
     // =========================
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
-        .text(`Enforcement Bias by Location (${year})`);
+        .text(`Enforcement Bias: Urban vs Regional vs Remote (${year})`);
 
+    // =========================
+    // LABELS
+    // =========================
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", height + 40)
@@ -146,31 +147,9 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
 
     svg.append("text")
         .attr("x", -height / 2)
-        .attr("y", -45)
+        .attr("y", -50)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .text("Total Offences");
-
-    // =========================
-    // LEGEND
-    // =========================
-    const legend = svg.append("g")
-        .attr("transform", `translate(${width - 100}, 0)`);
-
-    locations.forEach((loc, i) => {
-        const g = legend.append("g")
-            .attr("transform", `translate(0, ${i * 20})`);
-
-        g.append("rect")
-            .attr("width", 15)
-            .attr("height", 15)
-            .attr("fill", color(loc));
-
-        g.append("text")
-            .attr("x", 20)
-            .attr("y", 12)
-            .style("font-size", "12px")
-            .text(loc);
-    });
 }
