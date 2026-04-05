@@ -22,15 +22,16 @@ export function renderPieChart(container, data, options = {}) {
         .append("div")
         .style("display", "flex")
         .style("flex-direction", "column")
-        .style("align-items", "center")
-        .style("gap", "30px");
+        .style("align-items", "flex-start")
+        .style("gap", "30px")
+        .style("padding-right", "20px");
 
     const svg = wrapper
         .append("svg")
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${width / 2 - 15}, ${height / 2})`);
 
     // =========================
     // FILTER YEAR
@@ -130,13 +131,14 @@ export function renderPieChart(container, data, options = {}) {
     // LABELS
     // =========================
     const labelArc = d3.arc()
-        .innerRadius(radius * 0.6)
-        .outerRadius(radius);
+        .innerRadius(radius * 0.45)
+        .outerRadius(radius * 0.65);
 
     arcs.append("text")
         .attr("transform", d => `translate(${labelArc.centroid(d)})`)
         .attr("text-anchor", "middle")
-        .style("font-size", "11px")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .style("fill", "var(--text)")
         .text(d => {
             const total = d3.sum(pieData, d => d.value);
