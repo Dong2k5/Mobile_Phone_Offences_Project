@@ -164,7 +164,7 @@ export function renderStackedBarChart(container, data, options = {}) {
     // LEGEND
     // =====================
     const legend = svg.append("g")
-        .attr("transform", `translate(${width - 50},0)`);
+        .attr("transform", `translate(${width - 90},0)`);
 
     subgroups.forEach((key, i) => {
         const g = legend.append("g").attr("transform", `translate(0,${i * 20})`);

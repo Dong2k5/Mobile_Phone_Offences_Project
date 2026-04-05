@@ -15,10 +15,10 @@ export function renderLineChart(container, data, config = {}) {
     const selectedAge = config.age; // optional
     const selectedAgeGroups = config.ageGroups; // optional array of age groups
 
-    const margin = { top: 50, right: 45, bottom: 90, left: 55 };
+    const margin = { top: 50, right: 45, bottom: 150, left: 55 };
     const containerWidth = d3.select(container).node()?.clientWidth || 760;
     const width = Math.max(520, Math.min(700, containerWidth - margin.left - margin.right));
-    const height = 400 - margin.top - margin.bottom;
+    const height = 450 - margin.top - margin.bottom;
 
     const svg = d3.select(container)
         .append("svg")
@@ -85,7 +85,11 @@ export function renderLineChart(container, data, config = {}) {
     // =========================
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(45)")
+        .attr("text-anchor", "start")
+        .style("font-size", "11px");
 
     svg.append("g")
         .call(d3.axisLeft(y));
@@ -156,7 +160,7 @@ export function renderLineChart(container, data, config = {}) {
     // LEGEND (BOTTOM, LEFT-ALIGNED)
     // =========================
     const legend = svg.append("g")
-        .attr("transform", `translate(0, ${height + 40})`);
+        .attr("transform", `translate(0, ${height + 50})`);
 
     processed.forEach((g, i) => {
         const item = legend.append("g")
