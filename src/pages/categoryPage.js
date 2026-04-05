@@ -153,7 +153,9 @@ function renderAgeSection(container, ageData) {
 
 function renderPopulationSection(container, data, geoData) {
 
-  let selectedYear = Math.max(...data.map(d => d.YEAR));
+  // FIRST, get the years
+  const years = getYears(data); // use population dataset, not ageData
+  let selectedYear = Math.max(...years);
 
   container.innerHTML = `
     <h2>Population Analysis</h2>
@@ -172,12 +174,23 @@ function renderPopulationSection(container, data, geoData) {
     </div>
   `;
 
+  const yearSelect = container.querySelector("#yearFilter");
+
+  years.forEach(y => {
+    const option = new Option(y, y);
+    yearSelect.add(option);
+  });
+
+  yearSelect.value = selectedYear;
+
+  yearSelect.onchange = () => {
+    selectedYear = +yearSelect.value;
+    updateCharts();
+  };
+
   function updateCharts() {
     clearCharts(container);
 
-    // =====================
-    // INITIAL RENDER
-    // =====================
     renderMap("#map", data, geoData, { year: selectedYear });
     renderDualAxisBar("#dualAxis", data, { year: selectedYear });
     renderPieChart("#pie", data, { year: selectedYear });

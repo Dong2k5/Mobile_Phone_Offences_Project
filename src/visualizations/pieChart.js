@@ -1,11 +1,9 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 /**
- * Pie Chart:
- * Detection Methods (placeholder using ARRESTS & CHARGES)
+ * Pie Chart: Detection Methods (Camera vs Police issued)
  */
 export function renderPieChart(container, data, options = {}) {
-
     const year = options.year || 2024;
 
     // =========================
@@ -23,8 +21,8 @@ export function renderPieChart(container, data, options = {}) {
     const wrapper = d3.select(container)
         .append("div")
         .style("display", "flex")
+        .style("flex-direction", "column")
         .style("align-items", "center")
-        .style("justify-content", "center")
         .style("gap", "30px");
 
     const svg = wrapper
@@ -33,23 +31,25 @@ export function renderPieChart(container, data, options = {}) {
         .attr("height", height)
         .append("g")
         .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
     // =========================
-    // FILTER DATA
+    // FILTER YEAR
     // =========================
     const filtered = data.filter(d => d.YEAR === year);
 
     // =========================
-    // AGGREGATE (PLACEHOLDER)
+    // AGGREGATE DETECTION METHODS
     // =========================
-    const totalArrests = d3.sum(filtered, d => d.ARRESTS);
-    const totalCharges = d3.sum(filtered, d => d.CHARGES);
+    const counts = { "Camera": 0, "Police Patrols": 0 };
 
-    const pieData = [
-        { label: "Police Patrols", value: totalArrests },
-        { label: "Automated Cameras", value: totalCharges }
-    ];
+    filtered.forEach(d => {
+        const method = d.DETECTION_METHOD;
+        if (method === "Camera") counts["Camera"] += 1;
+        else if (method === "Police issued") counts["Police Patrols"] += 1;
+        // Ignore Others
+    });
 
-    // Later change with these: d.CAMERA_FINES & d.PATROL_FINES
+    const pieData = Object.entries(counts).map(([label, value]) => ({ label, value }));
 
     // =========================
     // COLOR
@@ -57,6 +57,7 @@ export function renderPieChart(container, data, options = {}) {
     const color = d3.scaleOrdinal()
         .domain(pieData.map(d => d.label))
         .range(["#60a5fa", "#fb7185"]);
+
     // =========================
     // PIE + ARC
     // =========================
@@ -76,7 +77,6 @@ export function renderPieChart(container, data, options = {}) {
     // TOOLTIP
     // =========================
     d3.select("#pie-tooltip").remove();
-
     const tooltip = d3.select("body")
         .append("div")
         .attr("id", "pie-tooltip")
@@ -97,7 +97,6 @@ export function renderPieChart(container, data, options = {}) {
         .attr("stroke", "#fff")
         .style("stroke-width", "2px")
         .on("mouseover", function (event, d) {
-
             d3.select(this).attr("opacity", 0.7);
 
             const total = d3.sum(pieData, d => d.value);
@@ -106,10 +105,10 @@ export function renderPieChart(container, data, options = {}) {
             tooltip
                 .style("opacity", 1)
                 .html(`
-          <strong>${d.data.label}</strong><br>
-          Count: ${d.data.value.toLocaleString()}<br>
-          Share: ${percent}%
-        `);
+                    <strong>${d.data.label}</strong><br>
+                    Count: ${d.data.value} out of ${total}<br>
+                    Share: ${percent}%
+                `);
         })
         .on("mousemove", function (event) {
             tooltip
@@ -122,7 +121,7 @@ export function renderPieChart(container, data, options = {}) {
         });
 
     // =========================
-    // LABELS (optional but nice)
+    // LABELS
     // =========================
     const labelArc = d3.arc()
         .innerRadius(radius * 0.6)
@@ -146,7 +145,7 @@ export function renderPieChart(container, data, options = {}) {
         .attr("y", -height / 2 + 30)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
-        .text(`Detection Methods(${year})`);
+        .text(`Detection Methods (${year})`);
 
     // =========================
     // LEGEND
