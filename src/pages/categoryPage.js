@@ -443,42 +443,42 @@ export async function renderCategoryPage(initialCategory = "population") {
       map: {
         context: "This map displays enforcement levels across Australian states and territories.",
         values: `Selected year: ${currentState.year} | Action type: ${currentState.actionType}`,
-        insights: "NSW and VIC consistently have the highest total fines, driven by large populations and dense urban enforcement. SA shows disproportionately high fines per capita, indicating stronger enforcement intensity relative to population. Smaller regions like NT and TAS fluctuate heavily, suggesting less stable but occasionally concentrated enforcement."
+        insights: "Nothern Territory (NT), Tasmania (Tas), and Victoria (VIC) consistently have the highest total fines, driven by large populations and dense urban enforcement. South Australia (SA) shows disproportionately high fines per capita, indicating stronger enforcement intensity relative to population. Smaller regions like NT and TAS fluctuate heavily, suggesting less stable but occasionally concentrated enforcement."
       },
       dualAxis: {
         context: "Compares absolute enforcement numbers (bars) with population-normalized rates (line) across states.",
         values: `Year: ${currentState.year} | Bars: Total ${currentState.actionType} | Line: Per 100k residents`,
-        insights: "High totals in NSW/VIC are population-driven, but SA and TAS often exceed them in per-capita rates, showing more aggressive enforcement relative to population size. This confirms enforcement is not evenly distributed — some states enforce more intensely, not just more frequently."
+        insights: "High totals in Queensland (QLD) and Victoria (VIC) are population-driven, but Australian Capital Territory (ACT) often exceed them in per-capita rates, showing more aggressive enforcement relative to population size. This confirms enforcement is not evenly distributed — some states enforce more intensely, not just more frequently."
       },
       pie: {
         context: "Shows the proportion of mobile phone offences detected by different methods (camera vs police).",
         values: `Year: ${currentState.year} | Detection methods: Camera and Police Patrols`,
-        insights: "2023 shows police-issued fines dominate almost entirely. 2024 reveals a massive shift to camera detection, especially in ACT, QLD, and VIC where camera becomes the dominant source. This indicates a system-wide transition to automated enforcement, not just gradual adoption."
+        insights: "2023 shows police-issued fines dominate almost entirely. 2024 reveals a massive shift to camera detection, especially in Australian Capital Territory (ACT), Queensland (QLD), and Victoria (VIC) where camera becomes the dominant source. This indicates a system-wide transition to automated enforcement, not just gradual adoption."
       },
       stackedBar: {
         context: "Breaks down enforcement by location type: urban, regional, and remote areas.",
         values: `Year: ${currentState.year} | Categories: Urban, Regional, Remote`,
-        insights: "Urban areas dominate enforcement volume across all states, especially NSW and VIC. However, regional areas consistently contribute a meaningful share. 'Remote' areas are minimal in NSW/VIC but dominant in NT, SA, WA — reflecting geographic structure more than enforcement bias alone. Enforcement distribution mirrors population but not perfectly."
+        insights: "Remote areas dominate enforcement volume across all states, especially Queensland (QLD). However, urban areas consistently contribute a meaningful share. 'Regional' areas are minimal in South Australia (SA) but dominant in other states, such as Australian Capital Territory (ACT), New South Wales (NSW), and Victoria (VIC), reflecting geographic structure more than enforcement bias alone. Enforcement distribution mirrors population but not perfectly."
       },
       heatmap: {
         context: "Shows offence intensity across age groups (rows) and location types (columns).",
         values: `Year: ${currentState.year} | Dimensions: Age Group × Location Type`,
-        insights: "26–39 and 17–25 age groups consistently show the highest offence rates across all locations. 0–16 and 65+ groups are negligible, indicating lower offending or enforcement targeting. Urban + 26–39 is the strongest hotspot across almost every state. In some states (SA, TAS), 17–25 rivals or exceeds 26–39, suggesting youth-heavy enforcement patterns."
+        insights: "26–39 and 40-64 age groups consistently show the highest offence rates across all locations. 0–16 and 65+ groups are negligible, indicating lower offending or enforcement targeting. Urban + 26–39 is the strongest hotspot across almost every state. In some states (SA, TAS), 17–25 rivals or exceeds 26–39, suggesting youth-heavy enforcement patterns."
       },
       lineChart: {
         context: "Displays quarterly trends in mobile phone offences from 2023 to 2024, broken down by age group.",
         values: "Quarters: Q1 2023 – Q4 2024 | Measures: Combined fines, arrests, and charges",
-        insights: "2023 → 2024 shows a sharp increase in total offences, especially from Q1 2024 onward. This spike aligns with the introduction of camera enforcement, not behavioral change alone. Some seasonal variation exists (slight dips mid-year, peaks in Q4 or Q1), but growth is structural, driven by policy and technology adoption rather than purely seasonal patterns."
+        insights: "2023 → 2024 shows a sharp increase in total offences, especially from first quarter (Q1) 2024 onward. This spike aligns with the introduction of camera enforcement, not behavioral change alone. Some seasonal variation exists (slight dips mid-year, peaks in 1st quarter 2024), but growth is structural, driven by policy and technology adoption rather than purely seasonal patterns."
       },
       ageFinesBar: {
         context: "Compares population-normalized fines per 100k residents for each age group.",
         values: `Year: ${currentState.year} | Metric: Fines per 100k population`,
-        insights: "26–39 has the highest per-capita offence rate overall, making it the most targeted or most offending group. 17–25 is consistently second highest, especially strong in SA, TAS, and VIC. 40–64 is moderate but still significant. 65+ and 0–16 remain very low even after normalization, indicating real behavioral or enforcement differences, not just population effects."
+        insights: "26–39 has the highest per-capita offence rate overall, making it the most targeted or most offending group. 40-64 is consistently second highest, especially strong in SA, TAS, and VIC. 17-25 is moderate but still significant. 65+ and 0–16 remain very low even after normalization, indicating real behavioral or enforcement differences, not just population effects."
       },
       enforcementBiasBar: {
         context: "Shows the proportion of offences detected by Camera vs Police Patrols for each age group.",
         values: `Year: ${currentState.year} | Detection methods: Camera (automated) vs Police Patrols (manual)`,
-        insights: "If younger age groups (17–25) show a significantly higher proportion of Police Patrol detection, it suggests potential age-profiling or targeted police enforcement. Conversely, if all age groups show similar camera/police ratios, enforcement is mechanically fair. A high camera proportion indicates automated, bias-free detection; high police proportion for young drivers signals potential discriminatory enforcement patterns."
+        insights: "Overall, in 2023, police patrols dominate detection across all age groups. In 2024, camera detection surges, especially for <=16 and 65+ groups, which become predominantly detected by cameras. The 17-25 group is more likely to be caught by police patrols, suggesting some enforcement bias or behavioral differences in how these groups are monitored or how they offend."
       }
     };
 

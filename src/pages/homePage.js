@@ -21,7 +21,7 @@ export function renderHomePage() {
         </h1>
 
         <p>
-          Analysing and visualising police enforcement data spanning 2008 to 2024. 
+          Analysing and visualising police enforcement data spanning 2023 to 2024. 
           Explore trends, jurisdictions, enforcement actions, and location-based patterns.
         </p>
       </div>
@@ -34,7 +34,7 @@ export function renderHomePage() {
 
         <p class="section-text">
           This project focuses on analysing and visualising mobile phone-use offences across Australia, using police 
-          enforcement data spanning 2008 to 2024. With increasing reliance on mobile devices, distracted driving has 
+          enforcement data spanning 2023 to 2024. With increasing reliance on mobile devices, distracted driving has 
           become a major road safety concern. Governments and law enforcement agencies impose fines, arrests, and charges 
           to deter such behaviour; however, patterns and trends are not always interpretable in raw datasets without 
           effective visualisation.
@@ -49,7 +49,7 @@ export function renderHomePage() {
 
         <h3>What You Can Explore:</h3>
         <ul class="section-text">
-          <li>Trends in mobile phone infringement fines over time (2008–2024)</li>
+          <li>Trends in mobile phone infringement fines over time (2023–2024)</li>
           <li>Enforcement levels compared across jurisdictions (8 states and territories)</li>
           <li>Differences in enforcement actions (fines vs charges vs arrests)</li>
           <li>Violations by location type and population-normalised rates</li>

@@ -17,7 +17,7 @@ export function renderAboutPage() {
           <h2>About This Project</h2>
           <p>
             This project focuses on analysing and visualising mobile phone-use offences across Australia, using police 
-            enforcement data spanning 2008 to 2024. With the increasing reliance on mobile devices, distracted driving has 
+            enforcement data spanning 2023 to 2024. With the increasing reliance on mobile devices, distracted driving has 
             become a major road safety concern. Governments and law enforcement agencies impose fines, arrests, and charges 
             to deter such behaviour; however, patterns and trends in these offences are not always easily interpretable in 
             raw datasets without effective visualisation.
@@ -46,7 +46,7 @@ export function renderAboutPage() {
           </p>
           <p>
             Official Australian government open-data platform for police enforcement and road safety. Contains records of 
-            mobile phone usage offences while driving, covering all states and territories from 2008 to 2024 (12,179 records).
+            mobile phone usage offences while driving, covering all states and territories from 2023 to 2024 (12,179 records).
           </p>
 
           <h3>Dataset 2 · Population Statistics</h3>
@@ -136,7 +136,7 @@ export function renderAboutPage() {
 
         <div class="about-section" style="border-top: 1px solid var(--border); padding-top: 24px; margin-top: 32px;">
           <p style="font-size: 11px; color: var(--sub); text-align: center; margin: 0;">
-            Data: datahub.roadsafety.gov.au · abs.gov.au · 12,179 records · 2008–2024
+            Data: datahub.roadsafety.gov.au · abs.gov.au · 12,179 records · 2023–2024
           </p>
           <p style="font-size: 11px; color: var(--sub); text-align: center; margin-top: 8px;">
             © 2026 PhoneSafe AU · Data visualisation project
