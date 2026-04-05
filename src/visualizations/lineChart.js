@@ -13,6 +13,7 @@ export function renderLineChart(container, data, config = {}) {
     d3.select(container).selectAll("*").remove();
 
     const selectedAge = config.age; // optional
+    const selectedAgeGroups = config.ageGroups; // optional array of age groups
 
     const margin = { top: 50, right: 45, bottom: 90, left: 55 };
     const containerWidth = d3.select(container).node()?.clientWidth || 760;
@@ -32,6 +33,8 @@ export function renderLineChart(container, data, config = {}) {
     let filteredData = data;
     if (selectedAge) {
         filteredData = data.filter(d => d.AGE_GROUP === selectedAge);
+    } else if (selectedAgeGroups && selectedAgeGroups.length > 0) {
+        filteredData = data.filter(d => selectedAgeGroups.includes(d.AGE_GROUP));
     }
 
     // =========================
@@ -54,7 +57,7 @@ export function renderLineChart(container, data, config = {}) {
             })
     }));
 
-    const allQuarters = [...new Set(data.map(d => d.YEAR_QUARTER))].sort((a, b) => {
+    const allQuarters = [...new Set(filteredData.map(d => d.YEAR_QUARTER))].sort((a, b) => {
         const [aYear, aQ] = a.split('-Q');
         const [bYear, bQ] = b.split('-Q');
         return aYear - bYear || aQ - bQ;

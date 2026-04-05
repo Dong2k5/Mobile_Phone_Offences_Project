@@ -6,6 +6,23 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
  */
 export function renderEnforcementBiasBar(container, data, options = {}) {
     const year = options.year || 2024;
+    const actionType = options.actionType || "fines";
+    const selectedAgeGroups = options.ageGroups; // optional array of age groups
+
+    const actionFieldMap = {
+        fines: "FINES",
+        arrests: "ARRESTS",
+        charges: "CHARGES"
+    };
+
+    const actionLabelMap = {
+        fines: "Fines",
+        arrests: "Arrests",
+        charges: "Charges"
+    };
+
+    const actionField = actionFieldMap[actionType] || actionFieldMap.fines;
+    const actionLabel = actionLabelMap[actionType] || actionLabelMap.fines;
 
     // =========================
     // CLEAR
@@ -26,7 +43,10 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // =========================
     // FILTER DATA
     // =========================
-    const filtered = data.filter(d => d.YEAR === year);
+    let filtered = data.filter(d => d.YEAR === year);
+    if (selectedAgeGroups && selectedAgeGroups.length > 0) {
+        filtered = filtered.filter(d => selectedAgeGroups.includes(d.AGE_GROUP));
+    }
 
     // Normalize detection method names
     filtered.forEach(d => {
@@ -36,11 +56,11 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     const detectionMethods = ["Camera", "Police Patrols"];
     const ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
-    // Prepare data: count offences by age group and detection method
+    // Prepare data: sum selected enforcement action by age group and detection method
     const stackData = Array.from(
         d3.rollup(
             filtered,
-            v => v.length, // count records
+            v => d3.sum(v, d => d[actionField]),
             d => d.AGE_GROUP,
             d => d.DETECTION_METHOD
         ),
@@ -64,7 +84,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
     // Normalize each bar to 100%
     series.forEach(s => {
         s.forEach(d => {
-            const total = d.data["Camera"] + d.data["Police Patrols"];
+            const total = d.data["Camera"] + d.data["Police Patrols"] || 1;
             d[0] = (d[0] / total) * 100;
             d[1] = (d[1] / total) * 100;
         });
@@ -138,7 +158,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
             const key = event.currentTarget.parentNode.__data__.key;
             const percentage = (d[1] - d[0]).toFixed(1);
             tooltip.style("opacity", 1)
-                .html(`<strong>${d.data.ageGroup}</strong><br>${key}: ${percentage}%`);
+                .html(`<strong>${d.data.ageGroup}</strong><br>${key} ${actionLabel}: ${percentage}%`);
         })
         .on("mousemove", event => {
             tooltip.style("left", (event.pageX + 10) + "px")
@@ -155,7 +175,7 @@ export function renderEnforcementBiasBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "var(--text)")
-        .text(`Detection Method Distribution by Age Group (${year})`);
+        .text(`Detection Method Distribution by Age Group (${actionLabel}, ${year})`);
 
     // =========================
     // LABELS

@@ -3,6 +3,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 export function renderStackedBarChart(container, data, options = {}) {
 
     const year = options.year || 2024;
+    const selectedLocations = options.locations; // optional array of location types
 
     d3.select(container).selectAll("*").remove();
 
@@ -20,12 +21,17 @@ export function renderStackedBarChart(container, data, options = {}) {
     // =====================
     // FILTER & AGGREGATE
     // =====================
-    const filtered = data.filter(d => d.YEAR === year);
+    let filtered = data.filter(d => d.YEAR === year);
 
     // Replace "Others" with "Remote"
     filtered.forEach(d => {
         if (d.LOCATION === "Others") d.LOCATION = "Remote";
     });
+
+    // Filter by selected locations if provided
+    if (selectedLocations && selectedLocations.length > 0) {
+        filtered = filtered.filter(d => selectedLocations.includes(d.LOCATION));
+    }
 
     // Get all location types dynamically
     const subgroups = Array.from(new Set(filtered.map(d => d.LOCATION)));

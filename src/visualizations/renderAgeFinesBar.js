@@ -2,6 +2,23 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export function renderAgeFinesBar(container, data, options = {}) {
     const year = options.year || 2024;
+    const actionType = options.actionType || "fines";
+    const selectedAgeGroups = options.ageGroups; // optional array of age groups
+
+    const actionMap = {
+        fines: "FINES_PER_100K",
+        arrests: "ARRESTS_PER_100K",
+        charges: "CHARGES_PER_100K"
+    };
+
+    const labelMap = {
+        fines: "Fines",
+        arrests: "Arrests",
+        charges: "Charges"
+    };
+
+    const metricKey = actionMap[actionType] || actionMap.fines;
+    const metricLabel = labelMap[actionType] || labelMap.fines;
 
     // =========================
     // CLEAR
@@ -22,12 +39,15 @@ export function renderAgeFinesBar(container, data, options = {}) {
     // =========================
     // FILTER DATA
     // =========================
-    const filtered = data.filter(d => d.YEAR === year);
+    let filtered = data.filter(d => d.YEAR === year);
+    if (selectedAgeGroups && selectedAgeGroups.length > 0) {
+        filtered = filtered.filter(d => selectedAgeGroups.includes(d.AGE_GROUP));
+    }
 
-    // Aggregate FINES_PER_100K by age group
+    // Aggregate selected action rate per 100k by age group
     const finesByAge = d3.rollups(
         filtered,
-        v => d3.sum(v, d => d.FINES_PER_100K),
+        v => d3.sum(v, d => d[metricKey]),
         d => d.AGE_GROUP
     ).sort((a, b) => {
         // Sort by age order
@@ -89,7 +109,7 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("fill", "#60a5fa")
         .on("mouseover", (event, d) => {
             tooltip.style("opacity", 1)
-                .html(`<strong>${d[0]}</strong><br>Fines per 100k: ${d[1].toFixed(1)}`);
+                .html(`<strong>${d[0]}</strong><br>${metricLabel} per 100k: ${d[1].toFixed(1)}`);
         })
         .on("mousemove", event => {
             tooltip.style("left", (event.pageX + 10) + "px")
@@ -106,7 +126,7 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "var(--text)")
-        .text(`Mobile Phone Fines per 100k Residents by Age Group (${year})`);
+        .text(`${metricLabel} per 100k Residents by Age Group (${year})`);
 
     // =========================
     // LABELS
@@ -126,5 +146,5 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .style("fill", "var(--text)")
-        .text("Fines per 100k Residents");
+        .text(`${metricLabel} per 100k Residents`);
 }

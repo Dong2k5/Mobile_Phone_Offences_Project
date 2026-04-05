@@ -22,8 +22,9 @@ let currentState = {
   category: "population",
   year: 2024,
   actionType: "fines",
-  selectedState: null,
   focusedChart: null,
+  ageGroupFilters: ["0-16", "17-25", "26-39", "40-64", "65 and over"],
+  locationFilters: ["Urban", "Regional", "Remote"],
 };
 
 // Define consistent color scheme for states
@@ -39,6 +40,13 @@ export async function renderCategoryPage(initialCategory = "population") {
   if (!years.includes(currentState.year)) {
     currentState.year = years[years.length - 1];
   }
+
+  const actionLabelMap = {
+    fines: "Fines",
+    arrests: "Arrests",
+    charges: "Charges"
+  };
+  const actionLabel = actionLabelMap[currentState.actionType] || "Fines";
 
   // Add styles for consistent text colors and responsive design
   const styleId = "category-page-styles";
@@ -209,6 +217,43 @@ export async function renderCategoryPage(initialCategory = "population") {
         min-height: 300px;
         overflow: hidden;
       }
+
+      /* Filter checkboxes */
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .filter-group label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .checkbox-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        cursor: pointer;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 13px;
+      }
       }
     `;
     document.head.appendChild(style);
@@ -246,20 +291,61 @@ export async function renderCategoryPage(initialCategory = "population") {
             </select>
           </div>
 
-          <div class="control-group" id="state-control">
-            <label>Select State (Optional)</label>
-            <select id="state-select">
-              <option value="">All States</option>
-              <option value="NSW">New South Wales</option>
-              <option value="VIC">Victoria</option>
-              <option value="QLD">Queensland</option>
-              <option value="WA">Western Australia</option>
-              <option value="SA">South Australia</option>
-              <option value="TAS">Tasmania</option>
-              <option value="NT">Northern Territory</option>
-              <option value="ACT">Australian Capital Territory</option>
-            </select>
+          ${currentState.category === "age" ? `
+          <div class="filter-group" id="age-filter-group">
+            <label>Age Groups</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <input type="checkbox" id="selectAllAges" checked>
+                <label for="selectAllAges"><strong>Select All</strong></label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="age-0-16" value="0-16" checked>
+                <label for="age-0-16">0-16</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="age-17-25" value="17-25" checked>
+                <label for="age-17-25">17-25</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="age-26-39" value="26-39" checked>
+                <label for="age-26-39">26-39</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="age-40-64" value="40-64" checked>
+                <label for="age-40-64">40-64</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="age-65" value="65 and over" checked>
+                <label for="age-65">65 and over</label>
+              </div>
+            </div>
           </div>
+          ` : ""}
+
+          ${currentState.category === "population" ? `
+          <div class="filter-group" id="location-filter-group">
+            <label>Location Types</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <input type="checkbox" id="selectAllLocations" checked>
+                <label for="selectAllLocations"><strong>Select All</strong></label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="loc-urban" value="Urban" checked>
+                <label for="loc-urban">Urban</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="loc-regional" value="Regional" checked>
+                <label for="loc-regional">Regional</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="loc-remote" value="Remote" checked>
+                <label for="loc-remote">Remote</label>
+              </div>
+            </div>
+          </div>
+          ` : ""}
         </div>
       </div>
     </section>
@@ -272,7 +358,6 @@ export async function renderCategoryPage(initialCategory = "population") {
 
   const yearSelect = document.getElementById("yearSelect");
   const actionTypeSelect = document.getElementById("actionTypeSelect");
-  const stateSelect = document.getElementById("state-select");
 
   document.getElementById("btnAge").onclick = () => switchCategory("age");
   document.getElementById("btnPopulation").onclick = () => switchCategory("population");
@@ -287,10 +372,53 @@ export async function renderCategoryPage(initialCategory = "population") {
     renderCharts();
   };
 
-  stateSelect.onchange = (e) => {
-    currentState.selectedState = e.target.value || null;
+  // Age group filter listeners
+  const selectAllAgesCheckbox = document.getElementById("selectAllAges");
+  if (selectAllAgesCheckbox) {
+    selectAllAgesCheckbox.onchange = (e) => {
+      const checkboxes = document.querySelectorAll('[id^="age-"]');
+      checkboxes.forEach(cb => cb.checked = e.target.checked);
+      updateAgeGroupFilters();
+    };
+  }
+
+  const ageCheckboxes = document.querySelectorAll('[id^="age-"]');
+  ageCheckboxes.forEach(checkbox => {
+    checkbox.onchange = () => updateAgeGroupFilters();
+  });
+
+  function updateAgeGroupFilters() {
+    const selected = [];
+    document.querySelectorAll('[id^="age-"]:checked').forEach(cb => {
+      selected.push(cb.value);
+    });
+    currentState.ageGroupFilters = selected.length > 0 ? selected : ["0-16", "17-25", "26-39", "40-64", "65 and over"];
     renderCharts();
-  };
+  }
+
+  // Location filter listeners
+  const selectAllLocationsCheckbox = document.getElementById("selectAllLocations");
+  if (selectAllLocationsCheckbox) {
+    selectAllLocationsCheckbox.onchange = (e) => {
+      const checkboxes = document.querySelectorAll('[id^="loc-"]');
+      checkboxes.forEach(cb => cb.checked = e.target.checked);
+      updateLocationFilters();
+    };
+  }
+
+  const locationCheckboxes = document.querySelectorAll('[id^="loc-"]');
+  locationCheckboxes.forEach(checkbox => {
+    checkbox.onchange = () => updateLocationFilters();
+  });
+
+  function updateLocationFilters() {
+    const selected = [];
+    document.querySelectorAll('[id^="loc-"]:checked').forEach(cb => {
+      selected.push(cb.value);
+    });
+    currentState.locationFilters = selected.length > 0 ? selected : ["Urban", "Regional", "Remote"];
+    renderCharts();
+  }
 
   function switchCategory(category) {
     currentState.category = category;
@@ -389,19 +517,14 @@ export async function renderCategoryPage(initialCategory = "population") {
         chartDiv = "map-chart";
         renderFn = () => renderMap(`#${chartDiv}`, mergedData, geoData, {
           year: currentState.year,
-          actionType: currentState.actionType,
-          onStateSelect: (state) => {
-            currentState.selectedState = state;
-            renderCharts();
-          }
+          actionType: currentState.actionType
         });
       } else if (chartId === "dualAxis") {
         title = "State Comparison";
         chartDiv = "dualAxis";
         renderFn = () => renderDualAxisBar(`#${chartDiv}`, mergedData, {
           year: currentState.year,
-          actionType: currentState.actionType,
-          state: currentState.selectedState
+          actionType: currentState.actionType
         });
       } else if (chartId === "pie") {
         title = "Detection Methods";
@@ -410,7 +533,7 @@ export async function renderCategoryPage(initialCategory = "population") {
       } else if (chartId === "stackedBar") {
         title = "Urban vs Regional vs Remote";
         chartDiv = "stackedBar";
-        renderFn = () => renderStackedBarChart(`#${chartDiv}`, mergedData, { year: currentState.year });
+        renderFn = () => renderStackedBarChart(`#${chartDiv}`, mergedData, { year: currentState.year, locations: currentState.locationFilters });
       }
     } else {
       if (chartId === "heatmap") {
@@ -420,15 +543,15 @@ export async function renderCategoryPage(initialCategory = "population") {
       } else if (chartId === "lineChart") {
         title = "Trend of Mobile Phone Offences";
         chartDiv = "lineChart";
-        renderFn = () => renderLineChart(`#${chartDiv}`, ageData);
+        renderFn = () => renderLineChart(`#${chartDiv}`, ageData, { ageGroups: currentState.ageGroupFilters });
       } else if (chartId === "ageFinesBar") {
-        title = "Fines per 100k Residents by Age Group";
+        title = `${actionLabel} per 100k Residents by Age Group`;
         chartDiv = "ageFinesBar";
-        renderFn = () => renderAgeFinesBar(`#${chartDiv}`, ageData, { year: currentState.year });
+        renderFn = () => renderAgeFinesBar(`#${chartDiv}`, ageData, { year: currentState.year, actionType: currentState.actionType, ageGroups: currentState.ageGroupFilters });
       } else if (chartId === "enforcementBiasBar") {
-        title = "Detection Method Distribution by Age Group";
+        title = `Detection Method Distribution by Age Group (${actionLabel})`;
         chartDiv = "enforcementBiasBar";
-        renderFn = () => renderEnforcementBiasBar(`#${chartDiv}`, ageData, { year: currentState.year });
+        renderFn = () => renderEnforcementBiasBar(`#${chartDiv}`, ageData, { year: currentState.year, actionType: currentState.actionType, ageGroups: currentState.ageGroupFilters });
       }
     }
 
@@ -515,21 +638,16 @@ export async function renderCategoryPage(initialCategory = "population") {
 
       renderMap("#map-chart", mergedData, geoData, {
         year: currentState.year,
-        actionType: currentState.actionType,
-        onStateSelect: (state) => {
-          currentState.selectedState = state;
-          renderCharts();
-        }
+        actionType: currentState.actionType
       });
 
       renderDualAxisBar("#dualAxis", mergedData, {
         year: currentState.year,
-        actionType: currentState.actionType,
-        state: currentState.selectedState
+        actionType: currentState.actionType
       });
 
       renderPieChart("#pie", mergedData, { year: currentState.year });
-      renderStackedBarChart("#stackedBar", mergedData, { year: currentState.year });
+      renderStackedBarChart("#stackedBar", mergedData, { year: currentState.year, locations: currentState.locationFilters });
     } else {
       dashboardContainer.innerHTML = `
         <div class="chart-container">
@@ -548,14 +666,14 @@ export async function renderCategoryPage(initialCategory = "population") {
         </div>
         <div class="chart-container">
           <div>
-            <h3 class="chart-title">Fines per 100k Residents by Age Group</h3>
+            <h3 class="chart-title">${actionLabel} per 100k Residents by Age Group</h3>
             <button class="detail-btn" data-chart="ageFinesBar">View Details</button>
           </div>
           <div id="ageFinesBar"></div>
         </div>
         <div class="chart-container">
           <div>
-            <h3 class="chart-title">Detection Method Distribution by Age Group</h3>
+            <h3 class="chart-title">Detection Method Distribution by Age Group (${actionLabel})</h3>
             <button class="detail-btn" data-chart="enforcementBiasBar">View Details</button>
           </div>
           <div id="enforcementBiasBar"></div>
@@ -568,9 +686,9 @@ export async function renderCategoryPage(initialCategory = "population") {
 
       const filtered = filterByYear(ageData, currentState.year);
       renderHeatmap("#heatmap", filtered, { year: currentState.year });
-      renderLineChart("#lineChart", ageData);
-      renderAgeFinesBar("#ageFinesBar", ageData, { year: currentState.year });
-      renderEnforcementBiasBar("#enforcementBiasBar", ageData, { year: currentState.year });
+      renderLineChart("#lineChart", ageData, { ageGroups: currentState.ageGroupFilters });
+      renderAgeFinesBar("#ageFinesBar", ageData, { year: currentState.year, actionType: currentState.actionType, ageGroups: currentState.ageGroupFilters });
+      renderEnforcementBiasBar("#enforcementBiasBar", ageData, { year: currentState.year, actionType: currentState.actionType, ageGroups: currentState.ageGroupFilters });
     }
   }
 

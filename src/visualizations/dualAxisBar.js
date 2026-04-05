@@ -9,6 +9,16 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
  */
 export function renderDualAxisBar(container, data, options = {}) {
     const year = options.year || 2024;
+    const actionType = options.actionType || "fines";
+
+    const labelMap = {
+        fines: "Fines",
+        arrests: "Arrests",
+        charges: "Charges"
+    };
+
+    const actionField = actionType.toUpperCase();
+    const actionLabel = labelMap[actionType] || labelMap.fines;
 
     // Clear previous chart
     d3.select(container).selectAll("*").remove();
@@ -34,11 +44,11 @@ export function renderDualAxisBar(container, data, options = {}) {
     const stateData = d3.rollups(
         filtered,
         v => {
-            const totalFines = d3.sum(v, d => d.FINES);
+            const totalActions = d3.sum(v, d => d[actionField]);
             const totalPop = d3.sum(v, d => d.POPULATION);
             return {
-                total: totalFines,
-                rate: (totalFines / totalPop) * 100000
+                total: totalActions,
+                rate: (totalActions / totalPop) * 100000
             };
         },
         d => d.JURISDICTION
@@ -123,7 +133,7 @@ export function renderDualAxisBar(container, data, options = {}) {
             tooltip.style("opacity", 1)
                 .html(`
                     <strong>${d.state}</strong><br>
-                    <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}<br>
+                    <span style="color:var(--accent);">● Total ${actionLabel.toLowerCase()}:</span> ${d.total.toLocaleString()}<br>
                     <span style="color:var(--text);">● Rate:</span> ${d.rate.toFixed(1)} per 100k
                 `);
         })
@@ -161,7 +171,7 @@ export function renderDualAxisBar(container, data, options = {}) {
                 .html(`
                     <strong>${d.state}</strong><br>
                     <span style="color:var(--text);">● Rate:</span> ${d.rate.toFixed(1)} per 100k<br>
-                    <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}
+                    <span style="color:var(--accent);">● Total ${actionLabel.toLowerCase()}:</span> ${d.total.toLocaleString()}
                 `);
         })
         .on("mousemove", event => {
@@ -179,7 +189,7 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "var(--text)")
-        .text(`Total Fines vs Rate per 100k (${year})`);
+        .text(`Total ${actionLabel} vs Rate per 100k (${year})`);
 
     // =========================
     // AXIS LABELS
@@ -189,7 +199,7 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("y", -10)
         .style("font-size", "12px")
         .style("fill", "var(--text)")
-        .text("Total Fines");
+        .text(`Total ${actionLabel}`);
 
     svg.append("text")
         .attr("x", width - 40)
