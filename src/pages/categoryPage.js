@@ -204,37 +204,6 @@ export async function renderCategoryPage(initialCategory = "population") {
         min-height: 300px;
         overflow: hidden;
       }
-
-      /* Ensure text is visible in dark mode */
-      @media (prefers-color-scheme: dark) {
-        .category-section h1,
-        .chart-title,
-        .control-group label,
-        #year-display,
-        .chart-insights h4,
-        .chart-insights p {
-          color: #f0f0f0;
-        }
-
-        select, input[type="range"] {
-          color: #f0f0f0;
-          background-color: var(--bg-secondary, #2a2a2a);
-        }
-      }
-
-      @media (prefers-color-scheme: light) {
-        .category-section h1,
-        .chart-title,
-        .control-group label,
-        #year-display,
-        .chart-insights h4,
-        .chart-insights p {
-          color: #1f2937;
-        }
-
-        select, input[type="range"] {
-          color: #1f2937;
-        }
       }
     `;
     document.head.appendChild(style);

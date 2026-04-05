@@ -66,11 +66,12 @@ export function renderAgeFinesBar(container, data, options = {}) {
         .append("div")
         .attr("id", "age-fines-tooltip")
         .style("position", "absolute")
-        .style("background", "#fff")
+        .style("background", "var(--panel)")
         .style("padding", "6px")
-        .style("border", "1px solid #ccc")
+        .style("border", "1px solid var(--border)")
         .style("border-radius", "4px")
         .style("pointer-events", "none")
+        .style("color", "var(--text)")
         .style("opacity", 0);
 
     // =========================

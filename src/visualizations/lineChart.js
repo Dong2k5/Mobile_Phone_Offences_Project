@@ -43,19 +43,27 @@ export function renderLineChart(container, data, config = {}) {
         values: d3.rollups(
             values,
             v => d3.sum(v, d => d.FINES + d.ARRESTS + d.CHARGES),
-            d => d.YEAR
+            d => d.YEAR_QUARTER
         )
-            .map(([year, value]) => ({ year: +year, value }))
-            .sort((a, b) => a.year - b.year)
+            .map(([quarter, value]) => ({ quarter, value }))
+            .sort((a, b) => {
+                const [aYear, aQ] = a.quarter.split('-Q');
+                const [bYear, bQ] = b.quarter.split('-Q');
+                return aYear - bYear || aQ - bQ;
+            })
     }));
 
-    const allYears = [...new Set(data.map(d => d.YEAR))];
+    const allQuarters = [...new Set(data.map(d => d.YEAR_QUARTER))].sort((a, b) => {
+        const [aYear, aQ] = a.split('-Q');
+        const [bYear, bQ] = b.split('-Q');
+        return aYear - bYear || aQ - bQ;
+    });
 
     // =========================
     // SCALES
     // =========================
     const x = d3.scalePoint()
-        .domain(allYears)
+        .domain(allQuarters)
         .range([0, width]);
 
     const y = d3.scaleLinear()
@@ -87,18 +95,19 @@ export function renderLineChart(container, data, config = {}) {
         .append("div")
         .attr("id", "line-tooltip")
         .style("position", "absolute")
-        .style("background", "#fff")
+        .style("background", "var(--panel)")
         .style("padding", "6px")
-        .style("border", "1px solid #ccc")
+        .style("border", "1px solid var(--border)")
         .style("border-radius", "4px")
         .style("pointer-events", "none")
+        .style("color", "var(--text)")
         .style("opacity", 0);
 
     // =========================
     // DRAW LINES
     // =========================
     const line = d3.line()
-        .x(d => x(d.year))
+        .x(d => x(d.quarter))
         .y(d => y(d.value))
         .curve(d3.curveMonotoneX);
 
@@ -116,7 +125,7 @@ export function renderLineChart(container, data, config = {}) {
             .data(group.values)
             .enter()
             .append("circle")
-            .attr("cx", d => x(d.year))
+            .attr("cx", d => x(d.quarter))
             .attr("cy", d => y(d.value))
             .attr("r", 4)
             .attr("fill", color(group.age))
@@ -125,7 +134,7 @@ export function renderLineChart(container, data, config = {}) {
                     .style("opacity", 1)
                     .html(`
                         <strong>${group.age}</strong><br>
-                        Year: ${d.year}<br>
+                        Quarter: ${d.quarter}<br>
                         Offences: ${d.value.toLocaleString()}
                     `);
             })
@@ -171,5 +180,5 @@ export function renderLineChart(container, data, config = {}) {
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "var(--text)")
-        .text("Offence Trends by Age Group (2023–2024)");
+        .text("Offence Trends by Age Group (2023–2024 Quarters)");
 }

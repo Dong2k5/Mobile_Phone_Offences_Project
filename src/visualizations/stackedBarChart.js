@@ -67,9 +67,9 @@ export function renderStackedBarChart(container, data, options = {}) {
     const color = d3.scaleOrdinal()
         .domain(subgroups)
         .range([
-            root.getPropertyValue('--accent').trim(),
-            root.getPropertyValue('--text').trim(),
-            root.getPropertyValue('--sub').trim()
+            root.getPropertyValue('--accent').trim(), // Urban
+            root.getPropertyValue('--sub').trim(), // Regional
+            root.getPropertyValue('--text').trim() // Remote
         ]);
 
     const stackedData = d3.stack()
@@ -135,11 +135,12 @@ export function renderStackedBarChart(container, data, options = {}) {
         .append("div")
         .attr("id", "stack-tooltip")
         .style("position", "absolute")
-        .style("background", "#fff")
+        .style("background", "var(--panel)")
         .style("padding", "6px")
-        .style("border", "1px solid #ccc")
+        .style("border", "1px solid var(--border)")
         .style("border-radius", "4px")
         .style("pointer-events", "none")
+        .style("color", "var(--text)")
         .style("opacity", 0);
 
     // =====================

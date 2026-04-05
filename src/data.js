@@ -15,6 +15,8 @@ export async function loadAllData() {
   const [data, geoData] = await Promise.all([
     d3.csv("src/data/mobile_phone_enforcement_age_all_states.csv", d => ({
       YEAR: +d.YEAR,
+      QUARTER: +d.QUARTER,
+      YEAR_QUARTER: d.YEAR_QUARTER,
       AGE_GROUP: d.AGE_GROUP,
       FINES: +d.FINES,
       ARRESTS: +d.ARRESTS,
