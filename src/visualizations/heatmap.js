@@ -1,8 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 /**
- * Heatmap: Age Group vs Jurisdiction
- * Shows offence intensity across age groups and states
+ * Heatmap: Age Group vs Location (Urban-Regional-Remote)
  */
 export function renderHeatmap(container, data, options = {}) {
 
@@ -36,19 +35,20 @@ export function renderHeatmap(container, data, options = {}) {
         filtered,
         v => d3.sum(v, d => d.FINES + d.ARRESTS + d.CHARGES),
         d => d.AGE_GROUP,
-        d => d.JURISDICTION
+        d => {
+            // RENAME LOCATIONS: Others → Remote
+            if (d.LOCATION === "Others") return "Remote";
+            return d.LOCATION; // Urban or Regional remain
+        }
     );
-
-    // Later change with this: d.LOCATION
 
     // Flatten structure
     const flatData = [];
-
-    heatData.forEach(([age, states]) => {
-        states.forEach(([state, value]) => {
+    heatData.forEach(([age, locations]) => {
+        locations.forEach(([loc, value]) => {
             flatData.push({
                 age,
-                state,
+                location: loc,
                 value
             });
         });
@@ -58,13 +58,13 @@ export function renderHeatmap(container, data, options = {}) {
     // DOMAINS
     // =========================
     const ageGroups = [...new Set(flatData.map(d => d.age))];
-    const states = [...new Set(flatData.map(d => d.state))];
+    const locations = [...new Set(flatData.map(d => d.location))];
 
     // =========================
     // SCALES
     // =========================
     const x = d3.scaleBand()
-        .domain(states)
+        .domain(locations)
         .range([0, width])
         .padding(0.05);
 
@@ -87,10 +87,9 @@ export function renderHeatmap(container, data, options = {}) {
         .call(d3.axisLeft(y));
 
     // =========================
-    // TOOLTIP (single instance)
+    // TOOLTIP
     // =========================
     d3.select("#heatmap-tooltip").remove();
-
     const tooltip = d3.select("body")
         .append("div")
         .attr("id", "heatmap-tooltip")
@@ -109,7 +108,7 @@ export function renderHeatmap(container, data, options = {}) {
         .data(flatData)
         .enter()
         .append("rect")
-        .attr("x", d => x(d.state))
+        .attr("x", d => x(d.location))
         .attr("y", d => y(d.age))
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
@@ -118,7 +117,7 @@ export function renderHeatmap(container, data, options = {}) {
             tooltip
                 .style("opacity", 1)
                 .html(`
-                    <strong>${d.age} - ${d.state}</strong><br>
+                    <strong>${d.age} - ${d.location}</strong><br>
                     Offences: ${d.value.toLocaleString()}
                 `);
         })
@@ -139,5 +138,5 @@ export function renderHeatmap(container, data, options = {}) {
         .attr("y", -20)
         .attr("text-anchor", "middle")
         .style("font-weight", "bold")
-        .text(`Age Group vs State Offences (${year})`);
+        .text(`Age Group vs Location Offences (${year})`);
 }
