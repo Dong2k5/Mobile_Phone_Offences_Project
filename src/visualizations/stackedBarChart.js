@@ -62,9 +62,15 @@ export function renderStackedBarChart(container, data, options = {}) {
         .nice()
         .range([height, 0]);
 
+    const root = getComputedStyle(document.documentElement);
+
     const color = d3.scaleOrdinal()
         .domain(subgroups)
-        .range(d3.schemeSet2); // dynamic palette
+        .range([
+            root.getPropertyValue('--accent').trim(),
+            root.getPropertyValue('--text').trim(),
+            root.getPropertyValue('--sub').trim()
+        ]);
 
     const stackedData = d3.stack()
         .keys(subgroups)

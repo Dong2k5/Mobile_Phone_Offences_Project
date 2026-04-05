@@ -123,7 +123,7 @@ export function renderDualAxisBar(container, data, options = {}) {
                 .html(`
                     <strong>${d.state}</strong><br>
                     <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}<br>
-                    <span style="color:var(--highlight,#ef4444);">● Rate:</span> ${d.rate.toFixed(1)} per 100k
+                    <span style="color:var(--text);">● Rate:</span> ${d.rate.toFixed(1)} per 100k
                 `);
         })
         .on("mousemove", event => {
@@ -142,7 +142,7 @@ export function renderDualAxisBar(container, data, options = {}) {
     svg.append("path")
         .datum(stateData)
         .attr("fill", "none")
-        .attr("stroke", "var(--highlight,#ef4444)")
+        .attr("stroke", "var(--text)")
         .attr("stroke-width", 2)
         .attr("d", line);
 
@@ -154,12 +154,12 @@ export function renderDualAxisBar(container, data, options = {}) {
         .attr("cx", d => x(d.state) + x.bandwidth() / 2)
         .attr("cy", d => yRight(d.rate))
         .attr("r", 5)
-        .style("fill", "var(--highlight,#ef4444)")
+        .style("fill", "var(--text)")
         .on("mouseover", function (event, d) {
             tooltip.style("opacity", 1)
                 .html(`
                     <strong>${d.state}</strong><br>
-                    <span style="color:var(--highlight,#ef4444);">● Rate:</span> ${d.rate.toFixed(1)} per 100k<br>
+                    <span style="color:var(--text);">● Rate:</span> ${d.rate.toFixed(1)} per 100k<br>
                     <span style="color:var(--accent);">● Total fines:</span> ${d.total.toLocaleString()}
                 `);
         })

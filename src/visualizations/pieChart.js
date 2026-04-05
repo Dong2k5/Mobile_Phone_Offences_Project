@@ -54,9 +54,14 @@ export function renderPieChart(container, data, options = {}) {
     // =========================
     // COLOR
     // =========================
+    const root = getComputedStyle(document.documentElement);
+
     const color = d3.scaleOrdinal()
         .domain(pieData.map(d => d.label))
-        .range(["#60a5fa", "#fb7185"]);
+        .range([
+            root.getPropertyValue('--accent').trim(), // Camera
+            root.getPropertyValue('--sub').trim()   // Police
+        ]);
 
     // =========================
     // PIE + ARC
