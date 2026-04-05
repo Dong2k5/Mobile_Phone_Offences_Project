@@ -10,11 +10,14 @@ import {
 // AGE charts
 import { renderHeatmap } from "../visualizations/heatmap.js";
 import { renderLineChart } from "../visualizations/lineChart.js";
+import { renderAgeFinesBar } from "../visualizations/renderAgeFinesBar.js";
+import { renderEnforcementBiasBar } from "../visualizations/renderEnforcementBiasBar.js";
 
 // POPULATION charts
 import { renderMap } from "../visualizations/mapChart.js";
 import { renderDualAxisBar } from "../visualizations/dualAxisBar.js";
 import { renderPieChart } from "../visualizations/pieChart.js";
+import { renderStackedBarChart } from "../visualizations/stackedBarChart.js";
 
 export async function renderCategoryPage(initialCategory = "population") {
 
@@ -95,6 +98,12 @@ function renderAgeSection(container, ageData) {
 
       <p>Trend of Mobile Phone Offences over time</p>
       <div id="lineChart"></div>
+
+      <p>Fines per 100k Residents by Age Group</p>
+      <div id="ageFinesBar"></div>
+
+      <p>Enforcement Bias: Urban vs Regional vs Remote</p>
+      <div id="enforcementBiasBar"></div>
     </div>
   `;
 
@@ -142,6 +151,8 @@ function renderAgeSection(container, ageData) {
 
     renderHeatmap("#heatmap", filtered, { year: selectedYear });
     renderLineChart("#lineChart", ageData);
+    renderAgeFinesBar("#ageFinesBar", ageData, { year: selectedYear });
+    renderEnforcementBiasBar("#enforcementBiasBar", ageData, { year: selectedYear });
   }
 
   updateCharts();
@@ -171,6 +182,9 @@ function renderPopulationSection(container, data, geoData) {
 
       <p>Detection Methods: Automated Cameras vs. Police Patrols</p>
       <div id="pie"></div>
+
+      <p>Urban vs Regional: Where are Drivers Most Distracted?</p>
+      <div id="stackedBar"></div>
     </div>
   `;
 
@@ -194,6 +208,7 @@ function renderPopulationSection(container, data, geoData) {
     renderMap("#map", data, geoData, { year: selectedYear });
     renderDualAxisBar("#dualAxis", data, { year: selectedYear });
     renderPieChart("#pie", data, { year: selectedYear });
+    renderStackedBarChart("#stackedBar", data, { year: selectedYear });
   }
 
   updateCharts();
