@@ -44,9 +44,12 @@ export function renderPieChart(container, data, options = {}) {
 
     filtered.forEach(d => {
         const method = d.DETECTION_METHOD;
-        if (method === "Camera") counts["Camera"] += 1;
-        else if (method === "Police issued") counts["Police Patrols"] += 1;
-        // Ignore Others
+
+        if (method === "Camera") {
+            counts["Camera"] += +d.FINES;
+        } else if (method === "Police issued") {
+            counts["Police Patrols"] += +d.FINES;
+        }
     });
 
     const pieData = Object.entries(counts).map(([label, value]) => ({ label, value }));
